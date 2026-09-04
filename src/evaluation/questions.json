@@ -1,0 +1,22 @@
+[
+  {
+    "qid": "1c_000",
+    "track": "1C: Searching the Way a Human Does",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "question_type": "provided_1c",
+    "expected_answer": null,
+    "expected_sources": [],
+    "minimum_search_rounds": 2,
+    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+  },
+  {
+    "qid": "1c_003",
+    "track": "1C: Searching the Way a Human Does",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "question_type": "provided_1c",
+    "expected_answer": null,
+    "expected_sources": [],
+    "minimum_search_rounds": 2,
+    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+  }
+]
