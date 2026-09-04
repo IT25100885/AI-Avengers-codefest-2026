@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": null,
+    "actual_answer": "Temporary test answer",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+        "sources_found": 3,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "More information about: State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+        "sources_found": 2,
+        "status": "sufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "sample-document.pdf",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": null,
+    "actual_answer": "Temporary test answer",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+        "sources_found": 3,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "More information about: In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+        "sources_found": 2,
+        "status": "sufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "sample-document.pdf",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]
