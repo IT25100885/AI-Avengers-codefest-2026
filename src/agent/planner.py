@@ -54,5 +54,5 @@ def plan_initial_query(question: str) -> str:
         {"role": "system", "content": PLANNER_SYSTEM_PROMPT},
         {"role": "user", "content": f"Question: {question}\nQuery:"},
     ]
-    query = call_llm(messages, temperature=0.0).strip()
-    return query.strip('"').strip("'")
+    query = call_llm(messages, temperature=0.0)
+    return query.replace('"', '').replace("'", "").strip()

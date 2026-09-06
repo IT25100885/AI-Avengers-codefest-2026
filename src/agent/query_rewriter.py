@@ -29,5 +29,5 @@ def rewrite_query(question: str, missing_info: str, previous_queries: list[str])
             "New search query:"
         )},
     ]
-    query = call_llm(messages, temperature=0.3).strip()
-    return query.strip('"').strip("'")
+    query = call_llm(messages, temperature=0.3)
+    return query.replace('"', '').replace("'", "").strip()
