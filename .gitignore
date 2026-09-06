@@ -217,5 +217,34 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# macOS
+# Environment variables / API keys
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Dataset / competition corpus
+data/Ashen_Era_Archive/
+
+# Vector database / generated indexes
+vector_store/
+chroma_db/
+faiss_index/
+
+# Temporary files
+tmp/
+cache/
