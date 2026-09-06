@@ -4,6 +4,8 @@ the gap -- not a repeat of a previous query.
 
 Place this at: src/agent/query_rewriter.py
 """
+import re
+
 from src.llm.client import call_llm
 
 
@@ -30,4 +32,6 @@ def rewrite_query(question: str, missing_info: str, previous_queries: list[str])
         )},
     ]
     query = call_llm(messages, temperature=0.3)
-    return query.replace('"', '').replace("'", "").strip()
+    cleaned = query.replace('"', '').replace("'", "")
+    cleaned = re.sub(r'[\x00-\x1f\x7f]', '', cleaned)
+    return cleaned.strip()
