@@ -1,0 +1,263 @@
+AI USAGE LOG — Claude (Anthropic)
+Team: AI-Avengers | Member 2 — AI/Reasoning Agent Engineer (Abdullah)
+Track: SLIIT Codefest 2026 — Sub-track 1C: Searching the Way a Human Does
+Session date: 2026-09-06
+Tool: Claude (Sonnet), used via web/chat interface for planning, debugging support,
+code drafting, and archive verification. Implementation itself was carried out
+locally using Antigravity (see separate Antigravity log).
+
+================================================================================
+SECTION 1 — LLM CLIENT SETUP & DEBUGGING (Groq)
+================================================================================
+
+CONTEXT:
+Member 2 is responsible for the LLM client, search planner, evidence-sufficiency
+checker, query rewriter, and the iterative search loop for Track 1C. Team decided
+to use Groq (not OpenRouter) as the LLM provider, confirmed intentional by team
+leader.
+
+KEY EXCHANGE — Choosing between Groq and OpenRouter:
+User asked which provider to use. Claude's advice: use Groq for fast dev
+iteration, and consider OpenRouter/DeepSeek for stronger reasoning on final
+demo answers if needed — since Groq was confirmed as the deliberate team choice,
+proceeded with Groq as primary/only provider, using its OpenAI-compatible SDK.
+
+KEY EXCHANGE — Antigravity's initial implementation plan for src/llm/client.py:
+Antigravity (the coding agent) proposed a plan to implement a reusable Groq
+client with call_llm() using tenacity for retry/backoff. Claude reviewed the
+plan and flagged one gap: the plan only covered plain-text LLM calls, but the
+evidence-checker module (needed later) requires structured JSON output with
+automatic retry-on-malformed-JSON — a different failure mode than API-level
+retries. Instructed Antigravity to add a call_llm_json() function to the same
+file before implementing, so this wouldn't need to be bolted on separately
+later. Also explicitly reconfirmed: no pydantic dependency, per earlier team
+decision to avoid it.
+
+Antigravity implemented src/llm/client.py and src/llm/__init__.py with both
+call_llm() and call_llm_json(), matching all constraints.
+
+BUG 1 — Missing dependency:
+First verification attempt (`from src.llm.client import call_llm, call_llm_json,
+get_groq_client`) failed with:
+    ModuleNotFoundError: No module named 'dotenv'
+Root cause: `python-dotenv` was listed in requirements.txt by Antigravity but
+never actually installed in the local environment. Fixed by running:
+    pip install -r requirements.txt
+Confirmed fix by re-running the import check successfully.
+
+BUG 2 — Wrong/deprecated model name:
+Second verification attempt (a real call_llm() call to Groq) failed with:
+    openai.NotFoundError: Error code: 404 - {'error': {'message': 'The model
+    `llama-3.3-70b-versatile` does not exist or you do not have access to it.'}}
+Diagnosis process:
+  1. Confirmed retry/backoff WAS working correctly — tenacity retried 5 times
+     (per config) before correctly re-raising the real underlying error via
+     reraise=True. This was treated as a positive verification result in
+     itself (proves the retry logic functions as designed), separate from the
+     model-name bug.
+  2. Rather than guessing a replacement model name, queried Groq's own
+     /v1/models endpoint directly using the real API key to get the ground-truth
+     list of currently available models:
+        GET https://api.groq.com/openai/v1/models
+     Returned models included: openai/gpt-oss-120b, openai/gpt-oss-20b,
+     qwen/qwen3.6-27b, qwen/qwen3.8-27b, groq/compound, groq/compound-mini,
+     whisper-large-v3(-turbo), canopylabs/orpheus-*, meta-llama/llama-prompt-guard-2-*,
+     allam-2-7b, openai/gpt-oss-safeguard-20b.
+     Notably, llama-3.3-70b-versatile was NOT in this list at all — confirming
+     it had been deprecated/renamed/removed from the account's available models.
+  3. Filtered the list down to general-purpose reasoning-capable models
+     (excluding speech-to-text, TTS, safety-classifier, and small/niche models),
+     narrowing to: openai/gpt-oss-120b, openai/gpt-oss-20b, qwen/qwen3.6-27b,
+     qwen/qwen3.8-27b, groq/compound(-mini).
+  4. Selected openai/gpt-oss-120b as the model for LLM_MODEL, reasoning: largest
+     general-purpose reasoning model available, most likely to give reliable
+     structured JSON output and strong multi-hop reasoning — both directly
+     needed for the evidence-sufficiency checker and query rewriter.
+Root cause of the fix not initially taking effect: the .env file still
+contained the OLD value (LLM_MODEL=llama-3.3-70b-versatile) — the environment
+variable had not actually been edited despite intending to. Diagnosed via:
+    python3 -c "from dotenv import load_dotenv; import os; load_dotenv();
+    print('LLM_MODEL =', os.getenv('LLM_MODEL'))"
+Corrected .env, re-verified, and successfully got a real hello-world response
+from Groq: "Hello! I hope you're having a wonderful day."
+Also verified call_llm_json() worked cleanly with openai/gpt-oss-120b, returning
+valid parsed JSON ({'status': 'ok'}) with no reasoning-trace contamination.
+
+DECISION RECORDED (for docs/decisions.md):
+"Initially configured for llama-3.3-70b-versatile, which returned a 404 (model
+no longer available on our account). Queried Groq's /v1/models endpoint
+directly to get the real list of accessible models, and switched to
+openai/gpt-oss-120b for stronger multi-hop reasoning and reliable structured
+JSON output, needed for the evidence-sufficiency checker. Verified with both a
+plain text call and a structured JSON call before proceeding."
+
+================================================================================
+SECTION 2 — MOCK CORPUS DESIGN (grounded in real archive facts)
+================================================================================
+
+CONTEXT:
+Member 1 (retrieval engineer) had not yet started building the real search()
+function, and the Ashen Era Archive had not yet been added to the shared repo.
+To avoid being blocked, Claude and the user built a hand-written mock corpus
+matching the team's agreed search() interface, so the full agent pipeline
+could be built and tested independently.
+
+Interface contract used (agreed with team):
+    search(query: str, top_k: int = 15) -> list[dict]
+    each dict: {chunk_id, text, source, page, category, score}
+
+User uploaded real archive files (chronicles.zip, codex.zip, ephemera.zip,
+images.zip, wiki.zip, sample_questions.json) so the mock data could be
+grounded in real corpus facts rather than invented placeholders.
+
+Claude inspected the real wiki articles and found a genuine 2-hop fact chain
+matching real sample question 1b_005 ("Which war was won by the organization
+that included Isolde Mournvale as one of its members?"):
+  - isolde_mournvale.md: Isolde Mournvale is a member of The Silent Choir.
+  - the_silent_choir.md: general background on The Silent Choir (no war
+    outcome named).
+  - the_war_of_drowned_light.md: The Silent Choir is recorded as the victor
+    of the War of Drowned Light.
+No single document answers the question alone — genuine multi-hop structure,
+confirmed directly from the real archive files rather than assumed.
+
+Built mock_search.py containing 5 mock chunks based on this real chain,
+including two deliberate distractors:
+  - the_winter_reckoning.md: same faction (Silent Choir) involved, but a
+    DIFFERENT war with a different victor — tests that the agent doesn't
+    conflate wars.
+  - ballad_concerning_vharenford.txt: a fictional conflicting/unreliable
+    source claiming a different victor — tests conflict handling and source
+    reliability judgment (official wiki vs. folklore/ballad).
+Verified the mock search's keyword-overlap ranking behaved correctly: a query
+about "Isolde Mournvale" alone surfaces only her bio (partial evidence); a
+follow-up query naming "Silent Choir" + war/victor terms surfaces the payoff
+chunk.
+
+================================================================================
+SECTION 3 — AGENT MODULES BUILT (planner, evidence checker, rewriter, loop)
+================================================================================
+
+Built the following modules against the mock corpus and the verified Groq
+client:
+  - src/agent/planner.py — plan_initial_query(question) -> str
+  - src/agent/evidence_checker.py — check_sufficiency(question, evidence) -> dict
+    (structured JSON: status, missing_information, reasoning)
+  - src/agent/query_rewriter.py — rewrite_query(question, missing_info,
+    previous_queries) -> str
+  - src/generation/answer_generator.py — generate_answer(question, evidence) -> str
+  - src/agent/search_agent.py — answer_question(question) -> dict, orchestrating
+    the full loop (search -> check -> rewrite -> search again, capped at
+    MAX_SEARCH_ROUNDS=3), matching the team's agreed output contract:
+    {"answer": ..., "search_steps": [...], "sources": [...]}
+
+BUG 3 — Loop completed in 1 round instead of demonstrating iterative search:
+First end-to-end run of search_agent.py against the real 1b_005-style test
+question returned a CORRECT final answer, but search_steps showed only 1
+round, marked "sufficient" immediately. This defeated the actual purpose of
+Track 1C — the team's own project guide explicitly states: "Do not build
+this: Question -> one search -> LLM answer. That is basic RAG, but it does
+not fully demonstrate the special behavior required by Track 1C."
+
+DIAGNOSIS:
+The planner's initial query was too broad — it produced "Isolde Mournvale
+organization war won" (bundling the entity + relationship + outcome concepts
+into one query), which caused the mock search's keyword-overlap scoring to
+accidentally retrieve all relevant chunks in a single pass.
+
+FIX:
+Rewrote planner.py's system prompt to force the model to extract ONLY the
+single primary named entity for the first-round query, explicitly forbidding
+it from including secondary concepts (war, victory, organization, member,
+etc.) in round 1 — those are deferred to the query rewriter in later rounds.
+Added few-shot examples using real sample questions (Isolde Mournvale,
+Gauntlet of Sorrowfell, Gravemaw Wyrm) to keep behavior consistent across
+question types.
+
+RESULT AFTER FIX (verified real run):
+  Round 1: query = "Isolde Mournvale", sources_found = 1, status = "insufficient"
+  Round 2: query = "The Silent Choir" war victory" (minor stray-quote artifact
+    noted, non-blocking), sources_found = 5, status = "sufficient"
+  Final answer: correctly identified "The War of Drowned Light" as the war won
+    by Isolde Mournvale's faction (The Silent Choir), correctly cited both
+    real source files, and correctly did NOT get misled by the Winter
+    Reckoning distractor or the tavern-ballad distractor.
+
+This confirmed the agent now demonstrates genuine multi-round, human-like
+iterative search rather than one-shot RAG — matching the team guide's stated
+"done" criterion for Member 2's role: "the system can perform Search 1 ->
+decide 'not enough' -> generate Search 2 -> collect new evidence -> decide
+'enough' -> answer with sources."
+
+DECISION RECORDED (for docs/decisions.md):
+"Initial version of the planner produced broad first-round queries (e.g.
+'Isolde Mournvale organization war won'), which caused the mock search to
+retrieve all relevant chunks in a single round -- making the system behave
+like basic RAG instead of demonstrating genuine iterative search, as required
+by Track 1C. Fixed by narrowing the planner's prompt to extract only the
+primary named entity for round 1, deferring secondary concepts (war,
+victory, faction) to the query rewriter in later rounds. Verified: the same
+test question now correctly triggers 2 search rounds, with round 1 marked
+insufficient and round 2 marked sufficient."
+
+Known minor issue flagged, not yet fixed: query_rewriter's output sanitization
+only strips OUTER quote characters, so an unbalanced INTERNAL quote (as seen
+in round 2's query above) can survive. Flagged for future hardening before
+demo, since a live judge-submitted question could trigger similar artifacts.
+
+================================================================================
+SECTION 4 — REAL ARCHIVE VERIFICATION (sample question 1c_000)
+================================================================================
+
+CONTEXT:
+To manually verify a real sample question against the actual archive (per
+team checklist item "Test the sample 1C questions manually"), investigated
+sample question 1c_000: "State the precise year in the Age of Shadows that
+marks the true founding of Gloamreach."
+
+INVESTIGATION:
+Searched all uploaded archive files for "Gloamreach" mentions. Found a
+dedicated wiki article (wiki/gloamreach.md) and several ephemera pieces
+(petition_concerning_gloamreach.txt, field_report_concerning_gloamreach.txt,
+trial_transcript_concerning_edge_of_gloamreach.pdf).
+
+Read wiki/gloamreach.md in full. Key finding: the article explicitly and
+repeatedly states the founding date is CONTESTED and NOT resolved:
+  "Sources contest when the location was founded, and no founding year is
+  accepted as definitive. Accordingly, no year should be assigned to its
+  establishment."
+The infobox itself lists "Founded: Contested; consult the Annals and Codex."
+
+Read petition_concerning_gloamreach.txt (ephemera) — an in-world political
+petition about Gloamreach's quarantine status. Confirmed it does NOT contain
+any founding-year claim; it is unrelated to the historical dispute.
+
+Followed the wiki's own pointer and searched the_annals_of_the_ashen_era.docx
+(the codex document the wiki explicitly names as an authority on this
+dispute) for all mentions of "Gloamreach." Found several entries describing
+individuals who served/worked at Gloamreach (a Herbalist, a Gaoler, a
+sellsword who claims "Edge of Gloamreach since 314 AS" — referring to a title/
+office, not the location's founding). NONE of the Annals entries checked
+state a founding year for the location itself.
+
+CONCLUSION:
+Based on all archive files examined, there is no definitive founding year for
+Gloamreach recorded anywhere in the corpus — the wiki explicitly frames this
+as a deliberately unresolved dispute, and the document it names as the
+authority (the Annals) does not contain a resolving date either, at least in
+the entries reviewed. This strongly suggests sample question 1c_000 is
+deliberately designed as an "insufficient evidence / conflicting sources"
+trap question — the correct system behavior is to report the founding date
+as genuinely disputed/unknown, NOT to confidently state a specific year. A
+system that outputs a specific year for this question would be
+hallucinating, since no source in the corpus supports one.
+
+ACTION ITEM (not yet completed): extend mock corpus with this real
+"Gloamreach founding disputed" scenario, and test it through the full
+search_agent.py loop once available, to verify the evidence checker and
+answer generator correctly report "insufficient/disputed" rather than
+guessing a year.
+
+================================================================================
+END OF LOG
+================================================================================

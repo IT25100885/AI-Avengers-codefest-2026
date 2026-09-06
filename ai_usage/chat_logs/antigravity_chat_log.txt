@@ -1,0 +1,128 @@
+AI USAGE LOG — Antigravity (Google DeepMind)
+Team: AI-Avengers | Member 2 — AI/Reasoning Agent Engineer (Abdullah)
+Track: SLIIT Codefest 2026 — Sub-track 1C: Searching the Way a Human Does
+Session date: 2026-09-06
+Tool: Antigravity (Google DeepMind coding agent)
+================================================================================
+
+1. OVERVIEW & RESPONSIBILITIES
+--------------------------------------------------------------------------------
+Member 2 is responsible for:
+  - Groq LLM client setup and retry mechanism
+  - Track 1C Search Planner (initial query formulation)
+  - Evidence-sufficiency Checker (structured JSON judgment)
+  - Query Rewriter (reformulating searches to bridge information gaps)
+  - Iterative Search Loop (multi-hop search execution)
+  - Final Grounded Answer Synthesis
+  - Package structure, unit test verification, and git merge operations
+
+================================================================================
+SECTION 1 — REPOSITORY SCOPE & CORPUS CHECK
+================================================================================
+User prompt:
+  "browse the AI-Avengers-codefest-2026 and check if there is anything named
+   ashen era or something in similar naming"
+
+Actions & Findings:
+  - Scanned directory structure and file contents.
+  - Verified mentions of "Ashen Era Agentic Search" and "Ashen Era Archive"
+    across README.md and data/README.md.
+  - Established project baseline for Track 1C multi-step search over the archive.
+
+================================================================================
+SECTION 2 — GROQ LLM CLIENT IMPLEMENTATION (src/llm/client.py)
+================================================================================
+User prompt:
+  "Implement src/llm/client.py: a reusable Groq client using the OpenAI-compatible
+   SDK, reading GROQ_API_KEY and LLM_MODEL from environment variables via
+   python-dotenv. Include a call_llm(messages, model=None, temperature=0.2)
+   function with retry/backoff using tenacity (max 5 attempts, exponential wait).
+   Do not add pydantic. Show me the implementation plan first and wait for my
+   confirmation before writing the file."
+
+Follow-up requirement:
+  "Good plan, proceed with this — but add one more function to src/llm/client.py:
+   call_llm_json(messages, model=None, temperature=0.0, max_retries=2) -> dict.
+   It should call call_llm, attempt json.loads() on the response (stripping
+   markdown code fences if present), and if parsing fails, re-prompt the model
+   with an instruction to return only valid JSON, up to max_retries times,
+   raising ValueError if it still fails. This will be needed by the evidence
+   checker. Export it from src/llm/__init__.py alongside call_llm and get_groq_client."
+
+Implementation Details:
+  - src/llm/client.py:
+    * `get_groq_client(api_key=None, base_url=None) -> OpenAI`: Configures Groq
+      endpoint (https://api.groq.com/openai/v1) with API key resolution.
+    * `call_llm(messages, model=None, temperature=0.2, **kwargs) -> str`: Calls
+      chat completions with @retry(stop=stop_after_attempt(5), wait=wait_exponential(min=2, max=30), reraise=True).
+    * `call_llm_json(messages, model=None, temperature=0.0, max_retries=2, **kwargs) -> dict`:
+      Regex-based markdown fence stripping (```json ... ```), JSON parsing, and
+      conversational re-prompting on malformed outputs.
+    * Zero pydantic imports (verified via AST inspection).
+  - src/llm/__init__.py:
+    * Exports `call_llm`, `call_llm_json`, `get_groq_client`.
+  - requirements.txt & .env.example:
+    * Added `openai>=1.0.0`, `python-dotenv>=1.0.0`, `tenacity>=8.0.0`.
+    * Added `GROQ_API_KEY`, `LLM_MODEL`.
+
+Testing & Verification:
+  - 8/8 unit tests passed covering fence stripping, JSON parsing, retry logic,
+    and missing API key handling.
+
+================================================================================
+SECTION 3 — AGENT PIPELINE INTEGRATION & IMPORT REFACTORING
+================================================================================
+User prompt:
+  "I've added draft files at src/retrieval/mock_search.py, src/agent/planner.py,
+   src/agent/evidence_checker.py, src/agent/query_rewriter.py,
+   src/agent/search_agent.py, and src/generation/answer_generator.py...
+   First, inspect these files and my existing src/llm/client.py...
+   Then tell me: what import statements need to change in each file to correctly
+   reference src.llm.client, src.agent.planner, etc. Also verify the search()
+   function signature in mock_search.py matches what search_agent.py expects,
+   and flag any other inconsistencies you find between these files."
+
+Inspection & Changes Made:
+  1. Verified `search(query: str, top_k: int = 15) -> List[Dict]` signature in
+     `mock_search.py` matched `search_agent.py` and downstream schema expectations.
+  2. Refactored imports file-by-file:
+     - `src/agent/planner.py`: updated import to `from src.llm.client import call_llm`.
+     - `src/agent/evidence_checker.py`: updated import to `from src.llm.client import call_llm_json`
+       and added defensive validation if non-dict JSON is returned.
+     - `src/agent/query_rewriter.py`: updated import to `from src.llm.client import call_llm`.
+     - `src/generation/answer_generator.py`: updated import to `from src.llm.client import call_llm`.
+     - `src/agent/search_agent.py`: updated all imports to full package paths:
+       `src.agent.planner`, `src.agent.evidence_checker`, `src.agent.query_rewriter`,
+       `src.generation.answer_generator`, `src.retrieval.mock_search`.
+  3. Created package initializers:
+     - `src/__init__.py`
+     - `src/agent/__init__.py`
+     - `src/generation/__init__.py`
+     - `src/retrieval/__init__.py`
+  4. Tested complete multi-round agent loop with mock corpus:
+     - 6/6 pipeline unit tests passed (planning, evidence judgment, rewriting,
+       grounded synthesis, and 2-hop search execution).
+
+================================================================================
+SECTION 4 — BRANCH MERGE & THREE-WAY CONFLICT RESOLUTION
+================================================================================
+User prompt:
+  "I need to merge all my commits made to my bramch to main"
+
+Actions & Resolution:
+  1. Checked out `main` branch.
+  2. Merged `Abdullah-retrieval` into `main`.
+  3. Resolved 3-way merge conflicts:
+     - `.env.example`: Merged all API keys (`GROQ_API_KEY`, `VOYAGE_API_KEY`, `LLM_MODEL`).
+     - `.gitignore`: Combined dataset paths, vector store indexes, virtual environments,
+       `.env`, and OS `.DS_Store` patterns.
+     - `docs/decisions.md`: Combined and formatted team decisions:
+       * Decision 001: Evaluation scoring system
+       * Decision 002: LLM model selection (Groq)
+       * Decision 003: Planner query scope
+  4. Verified full test suite on `main` (14/14 tests passed).
+  5. Committed merge (`3ef64f5`).
+
+================================================================================
+END OF LOG
+================================================================================
