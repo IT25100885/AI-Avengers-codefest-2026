@@ -20,6 +20,8 @@ questions). Keeping this prompt narrow ensures the evidence checker and
 query rewriter actually get exercised.
 """
 
+import re
+
 from src.llm.client import call_llm
 
 
@@ -55,4 +57,6 @@ def plan_initial_query(question: str) -> str:
         {"role": "user", "content": f"Question: {question}\nQuery:"},
     ]
     query = call_llm(messages, temperature=0.0)
-    return query.replace('"', '').replace("'", "").strip()
+    cleaned = query.replace('"', '').replace("'", "")
+    cleaned = re.sub(r'[\x00-\x1f\x7f]', '', cleaned)
+    return cleaned.strip()
