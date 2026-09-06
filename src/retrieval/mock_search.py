@@ -1,43 +1,41 @@
 """
 Mock search module for Track 1C agent development.
 
-Purpose
--------
-Member 1's real search() is not ready yet. This module provides a fake but
-REALISTIC search() that returns data in the exact schema the team agreed on,
-built from real facts in the actual Ashen Era Archive (wiki/the_war_of_drowned_light.md,
-wiki/the_silent_choir.md, wiki/isolde_mournvale.md).
+Place this at: src/retrieval/mock_search.py (REPLACES the earlier version --
+this file adds the Gloamreach scenario alongside the existing Isolde
+Mournvale / Silent Choir scenario. All prior chunks are preserved.)
 
-Interface contract (must match Member 1's eventual real search()):
-    search(query: str, top_k: int = 15) -> list[dict]
-    each dict: {chunk_id, text, source, page, category, score}
+New in this version
+--------------------
+Adds a second, harder test scenario based on REAL archive content, for
+sample question 1c_000: "State the precise year in the Age of Shadows that
+marks the true founding of Gloamreach."
 
-Why this specific scenario
----------------------------
-This mock reproduces sample question 1b_005:
-    "Which war was won by the organization that included Isolde Mournvale
-     as one of its members?"
+Unlike the Isolde Mournvale scenario (a genuine multi-hop question WITH a
+findable answer), this scenario is a deliberate TRAP: the real archive
+explicitly states the founding date is contested and unresolved, and even
+the document named as the authority (the Annals) does not contain a
+resolving year. The correct agent behavior is to report the date as
+genuinely disputed/unknown -- NOT to guess or hallucinate a specific year,
+even after using all available search rounds.
 
-This is a genuine 2-hop question. No single chunk below answers it directly:
-  - Chunk A says Isolde Mournvale is a member of The Silent Choir.
-  - Chunk B says The Silent Choir won the War of Drowned Light.
-A correct agent must search once, realize it only has half the answer,
-reformulate its query around "The Silent Choir", search again, and only
-then produce a grounded final answer.
+This tests exactly the checklist items:
+  - "Handle conflicting evidence rather than hiding it"
+  - "Handle insufficient evidence honestly"
+  - Rubric question: "What happens when there is not enough evidence?"
 
-Swap-out plan: once Member 1's real search() is ready, replace the import
-`from mock_search import search` with `from src.retrieval.search import search`.
-No other code should need to change if the interface is respected.
+Text below is taken directly (lightly trimmed) from the real archive files:
+wiki/gloamreach.md and codex/the_annals_of_the_ashen_era.docx.
 """
 
 from typing import List, Dict
 
 # ---------------------------------------------------------------------------
-# Mock chunk data (grounded in the real archive's wiki articles)
+# Mock chunk data
 # ---------------------------------------------------------------------------
 
 MOCK_CHUNKS: List[Dict] = [
-    # --- Round 1 bait: mentions Isolde Mournvale, gives her faction, NOT the war ---
+    # === Scenario A: Isolde Mournvale / Silent Choir (existing, unchanged) ===
     {
         "chunk_id": "wiki_isolde_mournvale_001",
         "text": (
@@ -50,7 +48,6 @@ MOCK_CHUNKS: List[Dict] = [
         "category": "wiki",
         "score": 0.90,
     },
-    # --- Round 1 bait: general Silent Choir background, no war outcome ---
     {
         "chunk_id": "wiki_silent_choir_001",
         "text": (
@@ -64,7 +61,6 @@ MOCK_CHUNKS: List[Dict] = [
         "category": "wiki",
         "score": 0.83,
     },
-    # --- Round 2 payoff: only surfaces well on a query naming "Silent Choir" + "war"/"victor" ---
     {
         "chunk_id": "wiki_war_drowned_light_001",
         "text": (
@@ -78,7 +74,6 @@ MOCK_CHUNKS: List[Dict] = [
         "category": "wiki",
         "score": 0.95,
     },
-    # --- Distractor: a different war, different faction, to test the agent doesn't conflate wars ---
     {
         "chunk_id": "wiki_winter_reckoning_001",
         "text": (
@@ -91,7 +86,6 @@ MOCK_CHUNKS: List[Dict] = [
         "category": "wiki",
         "score": 0.71,
     },
-    # --- Distractor: unreliable/conflicting source, for later conflict-handling tests ---
     {
         "chunk_id": "ephemera_ballad_vharenford_001",
         "text": (
@@ -104,19 +98,73 @@ MOCK_CHUNKS: List[Dict] = [
         "category": "ephemera",
         "score": 0.55,
     },
+
+    # === Scenario B: Gloamreach founding -- NEW, real "no answer exists" trap ===
+    {
+        "chunk_id": "wiki_gloamreach_001",
+        "text": (
+            "Gloamreach is a core location in the Pale Coast region, distinguished "
+            "from the surrounding coast by its quarantined status. It is ruled by "
+            "House Morvain and maintained with a garrison of 2483. Founded: "
+            "Contested; consult the Annals and Codex."
+        ),
+        "source": "gloamreach.md",
+        "page": 1,
+        "category": "wiki",
+        "score": 0.88,
+    },
+    {
+        "chunk_id": "wiki_gloamreach_002",
+        "text": (
+            "The recorded history of Gloamreach is inseparable from the uncertainty "
+            "surrounding its foundation. Sources contest when the location was "
+            "founded, and no founding year is accepted as definitive. Accordingly, "
+            "no year should be assigned to its establishment. The Annals and Codex "
+            "remain the authorities for examination of the disputed record and "
+            "should be consulted in place of later summaries that attempt to settle "
+            "the matter without resolving the underlying disagreement."
+        ),
+        "source": "gloamreach.md",
+        "page": 1,
+        "category": "wiki",
+        "score": 0.93,
+    },
+    {
+        "chunk_id": "codex_annals_gloamreach_001",
+        "text": (
+            "Annals registry: Isolde Nightbrook, a minor character recorded under "
+            "the office of Herbalist, born in 401 AS, member of The Iron-Ring "
+            "Cartel, serves at Gloamreach. Annals registry: Maelis Wrenfield, a "
+            "Gaoler with duties recorded at Gloamreach, member of The Ashen "
+            "Vanguard, born in 393 AS. Annals registry: Brannoc Ironmere the "
+            "Red-Handed is assigned Edge of Gloamreach since 314 AS (an office, "
+            "not a founding date). No founding year for the location of Gloamreach "
+            "itself appears in these registry entries."
+        ),
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1,
+        "category": "codex",
+        "score": 0.80,
+    },
+    {
+        "chunk_id": "ephemera_petition_gloamreach_001",
+        "text": (
+            "A petition addressed to the ruling authorities protests the ongoing "
+            "quarantine conditions at Gloamreach, describing hardship faced by "
+            "residents and requesting relief. The petition makes no reference to "
+            "the location's founding or history."
+        ),
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1,
+        "category": "ephemera",
+        "score": 0.60,
+    },
 ]
 
 
 def search(query: str, top_k: int = 15) -> List[Dict]:
     """
     Naive keyword-overlap mock search over MOCK_CHUNKS.
-
-    This intentionally behaves like a rough retrieval system: a query about
-    "Isolde Mournvale" surfaces her bio chunk (which reveals her faction) but
-    NOT the war-outcome chunk. Only a follow-up query that mentions
-    "Silent Choir" together with war/victor-related terms will rank the
-    war-outcome chunk highly enough to matter.
-
     Returns results sorted by descending score, matching the agreed schema.
     """
     query_terms = set(query.lower().split())
@@ -127,7 +175,6 @@ def search(query: str, top_k: int = 15) -> List[Dict]:
         overlap = len(query_terms & text_terms)
         if overlap == 0:
             continue
-        # Boost score slightly based on overlap, capped at 0.99
         adjusted_score = min(0.99, chunk["score"] + 0.01 * overlap)
         results.append({**chunk, "score": round(adjusted_score, 3)})
 
@@ -135,16 +182,19 @@ def search(query: str, top_k: int = 15) -> List[Dict]:
     return results[:top_k]
 
 
-# ---------------------------------------------------------------------------
-# Quick manual test (run this file directly to sanity-check behavior)
-# ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    print("=== Round 1 query: about Isolde Mournvale ===")
-    round1 = search("Isolde Mournvale faction member")
-    for r in round1:
-        print(f"  [{r['score']}] {r['source']}: {r['text'][:80]}...")
+    print("=== Scenario A, round 1: Isolde Mournvale ===")
+    for r in search("Isolde Mournvale"):
+        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
 
-    print("\n=== Round 2 query: about Silent Choir war victory ===")
-    round2 = search("Silent Choir war victor won")
-    for r in round2:
-        print(f"  [{r['score']}] {r['source']}: {r['text'][:80]}...")
+    print("\n=== Scenario A, round 2: Silent Choir war victory ===")
+    for r in search("Silent Choir war victory"):
+        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
+
+    print("\n=== Scenario B, round 1: Gloamreach founding ===")
+    for r in search("Gloamreach founding"):
+        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
+
+    print("\n=== Scenario B, round 2: Annals Gloamreach founding year ===")
+    for r in search("Annals Gloamreach founding year"):
+        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
