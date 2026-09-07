@@ -2,30 +2,34 @@
 Mock search module for Track 1C agent development.
 
 Place this at: src/retrieval/mock_search.py (REPLACES the earlier version --
-this file adds the Gloamreach scenario alongside the existing Isolde
-Mournvale / Silent Choir scenario. All prior chunks are preserved.)
+adds ONE new real chunk to the existing Gloamreach scenario. Isolde
+Mournvale / Silent Choir chunks unchanged.)
 
 New in this version
 --------------------
-Adds a second, harder test scenario based on REAL archive content, for
-sample question 1c_000: "State the precise year in the Age of Shadows that
-marks the true founding of Gloamreach."
+Adds the REAL Gazetteer codex passage that resolves the Gloamreach founding
+date, which was missing from the previous mock corpus. This tests a
+DIFFERENT failure mode than the original "genuinely no answer exists"
+Gloamreach test:
 
-Unlike the Isolde Mournvale scenario (a genuine multi-hop question WITH a
-findable answer), this scenario is a deliberate TRAP: the real archive
-explicitly states the founding date is contested and unresolved, and even
-the document named as the authority (the Annals) does not contain a
-resolving year. The correct agent behavior is to report the date as
-genuinely disputed/unknown -- NOT to guess or hallucinate a specific year,
-even after using all available search rounds.
+  Previous test proved: the agent won't hallucinate when NO source has
+  the answer.
 
-This tests exactly the checklist items:
-  - "Handle conflicting evidence rather than hiding it"
-  - "Handle insufficient evidence honestly"
-  - Rubric question: "What happens when there is not enough evidence?"
+  This test proves: when a lower-authority source (wiki) hedges/claims a
+  fact is "contested," but a higher-authority source (Codex) explicitly
+  and definitively resolves it, the agent must find and trust the Codex,
+  not stop at the wiki's hedge.
 
-Text below is taken directly (lightly trimmed) from the real archive files:
-wiki/gloamreach.md and codex/the_annals_of_the_ashen_era.docx.
+Ground truth (verified directly from the real archive):
+  codex/codex_vaeloria_i_gazetteer_of_the_sundered_realms.docx states:
+  "The founding record is exact: Gloamreach's founded is 246 AS. Popular
+  accounts wrongly claim otherwise. Such accounts are not accepted by
+  this gazetteer and do not supersede the established date of 246 AS."
+
+This directly contradicts the wiki's "Founded: Contested" framing --
+by design. The corpus intentionally has the wiki hedge while the Codex
+resolves it, matching the challenge brief's statement that sources in
+this archive "differ in reliability."
 """
 
 from typing import List, Dict
@@ -35,7 +39,7 @@ from typing import List, Dict
 # ---------------------------------------------------------------------------
 
 MOCK_CHUNKS: List[Dict] = [
-    # === Scenario A: Isolde Mournvale / Silent Choir (existing, unchanged) ===
+    # === Scenario A: Isolde Mournvale / Silent Choir (unchanged) ===
     {
         "chunk_id": "wiki_isolde_mournvale_001",
         "text": (
@@ -99,7 +103,7 @@ MOCK_CHUNKS: List[Dict] = [
         "score": 0.55,
     },
 
-    # === Scenario B: Gloamreach founding -- NEW, real "no answer exists" trap ===
+    # === Scenario B: Gloamreach founding -- wiki hedge vs Codex resolution ===
     {
         "chunk_id": "wiki_gloamreach_001",
         "text": (
@@ -147,6 +151,23 @@ MOCK_CHUNKS: List[Dict] = [
         "score": 0.80,
     },
     {
+        # NEW real chunk: the actual resolving fact, from the real Gazetteer.
+        # This is the authoritative source the wiki itself points to, and it
+        # explicitly overrides the wiki's "contested" framing.
+        "chunk_id": "codex_gazetteer_gloamreach_001",
+        "text": (
+            "Gloamreach - region: The Pale Coast; garrison strength: 2483; status: "
+            "quarantined; ruled by House Morvain. The founding record is exact: "
+            "Gloamreach's founded is 246 AS. Popular accounts wrongly claim "
+            "otherwise. Such accounts are not accepted by this gazetteer and do "
+            "not supersede the established date of 246 AS."
+        ),
+        "source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.docx",
+        "page": 1,
+        "category": "codex",
+        "score": 0.97,
+    },
+    {
         "chunk_id": "ephemera_petition_gloamreach_001",
         "text": (
             "A petition addressed to the ruling authorities protests the ongoing "
@@ -183,18 +204,6 @@ def search(query: str, top_k: int = 15) -> List[Dict]:
 
 
 if __name__ == "__main__":
-    print("=== Scenario A, round 1: Isolde Mournvale ===")
-    for r in search("Isolde Mournvale"):
-        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
-
-    print("\n=== Scenario A, round 2: Silent Choir war victory ===")
-    for r in search("Silent Choir war victory"):
-        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
-
-    print("\n=== Scenario B, round 1: Gloamreach founding ===")
-    for r in search("Gloamreach founding"):
-        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
-
-    print("\n=== Scenario B, round 2: Annals Gloamreach founding year ===")
-    for r in search("Annals Gloamreach founding year"):
-        print(f"  [{r['score']}] {r['source']}: {r['text'][:70]}...")
+    print("=== Gloamreach founding query ===")
+    for r in search("Gloamreach founding year"):
+        print(f"  [{r['score']}] {r['source']} ({r['category']}): {r['text'][:80]}...")

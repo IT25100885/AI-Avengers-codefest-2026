@@ -1,0 +1,262 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": "246 AS",
+    "actual_answer": "The available sources do not provide a single, definitive year for the founding of Gloamreach. Both wiki entries explicitly note that the foundation date is **contested** and that no accepted year exists:\n\n- “The recorded history of Gloamreach is inseparable from the uncertainty surrounding its foundation… Accordingly, no year should be assigned to its establishment.” — *Source: gloamreach.md (wiki)*\n- “Founded: Contested; consult the Annals and Codex.” — *Source: gloamreach.md (wiki)*\n\nThe codex entries from **the_annals_of_the_ash​en_era.docx** list individuals associated with Gloamreach but contain **no founding year** for the location itself.  \n\nTherefore, based on the evidence provided, there is **no precise year in the Age of Shadows that can be stated as the true founding of Gloamreach**. The foundation remains disputed and undocumented in the authoritative records.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gloamreach",
+        "sources_found": 4,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gloamreach founding year Age of Shadows precise date",
+        "sources_found": 9,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gloamreach establishment year Age of Shadows chronicle",
+        "sources_found": 9,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": "391 AS",
+    "actual_answer": "The archive does not contain any information about a “Gauntlet of Sorrowfell,” let alone a date for when it was forged. None of the provided sources mention that artifact, its creation, or any related events that could be used to infer a forging year.  \n\n**Conclusion:** No relevant evidence about the forging year of the Gauntlet of Sorrowfell is found in the supplied documents.  \n\n*Sources consulted:* all listed entries (the_war_of_drowned_light.md, gloamreach.md, isolde_mournvale.md, the_silent_choir.md, the_annals_of_the_ashen_era.docx, the_winter_reckoning.md, ballad_concerning_vharenford.txt, petition_concerning_gloamreach.txt). None contain the requested information.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gauntlet of Sorrowfell",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gauntlet of Sorrowfell forged year history",
+        "sources_found": 9,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gauntlet of Sorrowfell forging date",
+        "sources_found": 8,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1b_005",
+    "question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
+    "expected_answer": "The War of Drowned Light",
+    "actual_answer": "The organization that Isolde Mournvale belongs to is **The Silent Choir** (isolde_mournvale.md).  \nAccording to the entry on that war, **the War of Drowned Light** (225 AS – 235 AS) is recorded as a victory for The Silent Choir (the_war_of_drowned_light.md).  \n\nThus, the war won by the organization that included Isolde Mournvale is **the War of Drowned Light**.  \n\n*Sources: isolde_mournvale.md (membership in The Silent Choir); the_war_of_drowned_light.md (victory for The Silent Choir).*",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Isolde Mournvale",
+        "sources_found": 2,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "The Silent Choir war victory",
+        "sources_found": 9,
+        "status": "sufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "internal_direct_001",
+    "question": "Which organization includes Isolde Mournvale as a member?",
+    "expected_answer": "The Silent Choir",
+    "actual_answer": "Isolde Mournvale is listed as a member of **The Silent Choir**【isolde_mournvale.md】.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Isolde Mournvale",
+        "sources_found": 2,
+        "status": "sufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "internal_nonsense_001",
+    "question": "asdfgh qwerty zxcvbn ???",
+    "expected_answer": null,
+    "actual_answer": "I’m sorry, but the provided evidence does not contain any information relevant to the question “asdfgh qwerty zxcvbn ???.” No applicable facts can be drawn from the source about the War of Drowned Light. Consequently, I cannot answer the query based on the given archive.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "asdfgh qwerty zxcvbn",
+        "sources_found": 0,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "asdfgh qwerty zxcvbn origin usage",
+        "sources_found": 1,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "asdfgh qwerty zxcvbn keyboard pattern significance",
+        "sources_found": 0,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]
