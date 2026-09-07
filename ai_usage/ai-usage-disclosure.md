@@ -18,6 +18,11 @@ AI assistance was utilized across the following areas of the codebase:
    - Developing unit tests for planner query extraction, evidence checking, query rewriting, and answer generation.
 4. **Git Branch & Conflict Resolution**:
    - Merging feature branch into `main` and resolving merge conflicts in `.env.example`, `.gitignore`, and `docs/decisions.md`.
+5. **Streamlit UI & Integration (Member 3 - Sameeha)**:
+   - Development of `src/app.py` and `src/ui/mock_backend.py`.
+   - Iterative search round visualizer with evidence sufficiency statuses and source citation cards.
+   - Dual-backend design enabling seamless switching between live agent pipeline and deterministic simulation mode.
+   - Automated contract validation test suite in `tests/test_ui_backend.py`.
 
 ## Detailed Logs
 Complete transcripts and interaction logs are available in the `ai_usage/chat_logs/` folder:
