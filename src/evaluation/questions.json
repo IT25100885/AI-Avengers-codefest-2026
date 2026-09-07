@@ -24,20 +24,25 @@
     "track": "1B: Connecting Facts Across Thousands of Pages",
     "question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
     "question_type": "provided_1b_multihop",
-    "expected_answer": null,
-    "expected_sources": [],
+    "expected_answer": "The War of Drowned Light",
+    "expected_sources": [
+     "wiki/isolde_mournvale.md",
+      "wiki/the_war_of_drowned_light.md"
+    ],
     "minimum_search_rounds": 1,
-    "notes": "Official Track 1B question used as an additional multi-step test for our agent. Verify the membership and war outcome against original documents. Follow-up searching is needed only if the collected evidence is incomplete."
+    "notes": "Verified against the original archive: Isolde Mournvale's Infobox lists The Silent Choir under Member of. The War of Drowned Light's Infobox lists The Silent Choir as Victor. These two facts support the answer."
   },
   {
     "qid": "internal_direct_001",
     "track": "Internal evaluation",
     "question": "Which organization includes Isolde Mournvale as a member?",
     "question_type": "direct_lookup",
-    "expected_answer": null,
-    "expected_sources": [],
+    "expected_answer": "The Silent Choir",
+    "expected_sources": [
+      "wiki/isolde_mournvale.md"
+    ],
     "minimum_search_rounds": 1,
-    "notes": "Team-created direct-lookup test. Verify the expected answer and source against the archive. One search can be enough if it returns sufficient evidence."
+    "notes": "Verified against the original archive: wiki/isolde_mournvale.md, Infobox, Member of = The Silent Choir. One search is sufficient if it retrieves this evidence."
   },
   {
     "qid": "internal_nonsense_001",
@@ -48,5 +53,6 @@
     "expected_sources": [],
     "minimum_search_rounds": 0,
     "notes": "Team-created robustness test. Acceptable behaviour is to request a clear question or explain that the input cannot be interpreted. It should not invent a lore answer or crash. No search is required."
+
   }
 ]
