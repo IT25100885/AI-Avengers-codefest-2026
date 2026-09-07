@@ -238,7 +238,7 @@ venv/
 Thumbs.db
 
 # Dataset / competition corpus
-data/Ashen_Era_Archive/
+data/corpus/
 
 # Vector database / generated indexes
 vector_store/
