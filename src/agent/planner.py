@@ -52,9 +52,13 @@ Return ONLY the query text, nothing else -- no quotes, no explanation."""
 
 
 def plan_initial_query(question: str) -> str:
+    cleaned_input = question.strip() if question else ""
+    if not cleaned_input or not any(c.isalnum() for c in cleaned_input):
+        return ""
+
     messages = [
         {"role": "system", "content": PLANNER_SYSTEM_PROMPT},
-        {"role": "user", "content": f"Question: {question}\nQuery:"},
+        {"role": "user", "content": f"Question: {cleaned_input}\nQuery:"},
     ]
     query = call_llm(messages, temperature=0.0)
     cleaned = query.replace('"', '').replace("'", "")
