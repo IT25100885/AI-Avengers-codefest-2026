@@ -138,3 +138,24 @@ These scores assess answer content only.
 Retrieval and citation scores remain unassessed.
 The run used mock retrieval based on the last confirmed configuration;
 it does not demonstrate successful full-archive retrieval.
+
+
+### Archive verification correction: Gloamreach and Gauntlet
+
+The original codex PDFs establish:
+- Gloamreach was founded in 246 AS.
+  Source: Codex Vaeloria I, PDF page 23.
+- Gauntlet of Sorrowfell was forged in 391 AS.
+  Source: Codex Vaeloria II, PDF page 11.
+
+These are answerable questions involving conflicting or incomplete
+sources, not verified no-answer questions.
+
+The earlier mock run did not retrieve the authoritative codex entries.
+Its responses failed to supply the correct years.
+
+The Gloamreach response also incorrectly generalized that the Codex
+contains no founding date. The Gauntlet refusal was limited to supplied
+evidence, but still did not answer the full-archive question.
+
+Next: test whether real retrieval returns these specific codex passages.

@@ -4,20 +4,24 @@
     "track": "1C: Searching the Way a Human Does",
     "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
     "question_type": "provided_1c",
-    "expected_answer": null,
-    "expected_sources": [],
-    "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus. Search-round count alone does not determine success."
+    "expected_answer": "246 AS",
+    "expected_sources": [
+      "codex/codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf"
+    ],
+    "minimum_search_rounds": 1,
+    "notes": "Verified against the original archive: Codex Vaeloria I, PDF page 23, Gloamreach entry, Founded = 246 AS. The codex explicitly rejects contrary popular accounts. The wiki's contested label should prompt consultation of the authoritative record. Additional searches are required when initial evidence is insufficient."
   },
   {
     "qid": "1c_003",
     "track": "1C: Searching the Way a Human Does",
     "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
     "question_type": "provided_1c",
-    "expected_answer": null,
-    "expected_sources": [],
-    "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus. Search-round count alone does not determine success."
+    "expected_answer": "391 AS",
+    "expected_sources": [
+      "codex/codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf"
+    ],
+    "minimum_search_rounds": 1,
+    "notes": "Verified against the original archive: Codex Vaeloria II, PDF page 11, Gauntlet of Sorrowfell entry, Forged = 391 AS. The codex explicitly rejects competing dates. Follow the wiki's reference to authoritative records rather than treating the date as unknowable."
   },
   {
     "qid": "1b_005",
