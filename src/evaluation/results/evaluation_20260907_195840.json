@@ -1,0 +1,258 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": null,
+    "actual_answer": "The sources do not provide a single, definitive year for the founding of Gloamreach. Both wiki entries explicitly state that the foundation year is **contested** and that no accepted year exists (“Founded: Contested; consult the Annals and Codex”) and that the Annals and Codex themselves contain no entry giving a founding date for the location (the registries list individuals associated with Gloamreach but no founding year)【gloamreach.md (wiki)】【the_annals_of_the_ashen_era.docx (codex)】.  \n\nTherefore, a precise year in the Age of Shadows for the “true” founding of Gloamreach cannot be stated from the available evidence.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gloamreach",
+        "sources_found": 4,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gloamreach founding year Age of Shadows precise date",
+        "sources_found": 9,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gloamreach established Year of the Black Dawn Age of Shadows recordGloamreach established Year of the Black Dawn Age of Shadows record",
+        "sources_found": 9,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": null,
+    "actual_answer": "The provided sources contain no information about an item called the **“Gauntlet of Sorrowfell,”** let alone any date for its forging. None of the wiki entries, codex excerpts, or ephemera mention that gauntlet, so the evidence does not support answering the question.  \n\n**Answer:** The year the Gauntlet of Sorrowfell was forged cannot be determined from the given evidence. (No source mentions the gauntlet.)",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gauntlet of Sorrowfell",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gauntlet of Sorrowfell forged year",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gauntlet of Sorrowfell forging date",
+        "sources_found": 8,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1b_005",
+    "question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
+    "expected_answer": null,
+    "actual_answer": "The organization that counted Isolde Mournvale among its members was **The Silent Choir** (see *isolde_mournvale.md*).  \nAccording to the entry on the conflict, **the War of Drowned Light** is recorded as a victory for The Silent Choir (see *the_war_of_drowned_light.md*).  \n\n**Answer:** The Silent Choir won the **War of Drowned Light**.  \n\n*Sources:*  \n- Isolde Mournvale – member of The Silent Choir (*isolde_mournvale.md*).  \n- War of Drowned Light – recorded as a victory for The Silent Choir (*the_war_of_drowned_light.md*).",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Isolde Mournvale",
+        "sources_found": 2,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "The Silent Choir war victory",
+        "sources_found": 9,
+        "status": "sufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "internal_direct_001",
+    "question": "Which organization includes Isolde Mournvale as a member?",
+    "expected_answer": null,
+    "actual_answer": "Isolde Mournvale is listed as a member of **The Silent Choir**【isolde_mournvale.md (wiki)】.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Isolde Mournvale",
+        "sources_found": 2,
+        "status": "sufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "internal_nonsense_001",
+    "question": "asdfgh qwerty zxcvbn ???",
+    "expected_answer": null,
+    "actual_answer": "I’m sorry, but the provided evidence does not contain any information that can answer the question “asdfgh qwerty zxcvbn ???.” The only source given discusses the War of Drowned Light (its dates, casualties, and outcome) and does not address the terms in the question. Consequently, I cannot provide a confident answer based on the available evidence.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "",
+        "sources_found": 0,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "asdfgh qwerty zxcvbn meaning",
+        "sources_found": 0,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "asdfgh qwerty zxcvbn keyboard pattern origin",
+        "sources_found": 1,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]

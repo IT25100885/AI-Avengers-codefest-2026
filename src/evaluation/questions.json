@@ -7,7 +7,7 @@
     "expected_answer": null,
     "expected_sources": [],
     "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+    "notes": "Official sample question. Expected answer and sources must be identified from the corpus. Search-round count alone does not determine success."
   },
   {
     "qid": "1c_003",
@@ -17,6 +17,36 @@
     "expected_answer": null,
     "expected_sources": [],
     "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+    "notes": "Official sample question. Expected answer and sources must be identified from the corpus. Search-round count alone does not determine success."
+  },
+  {
+    "qid": "1b_005",
+    "track": "1B: Connecting Facts Across Thousands of Pages",
+    "question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
+    "question_type": "provided_1b_multihop",
+    "expected_answer": null,
+    "expected_sources": [],
+    "minimum_search_rounds": 1,
+    "notes": "Official Track 1B question used as an additional multi-step test for our agent. Verify the membership and war outcome against original documents. Follow-up searching is needed only if the collected evidence is incomplete."
+  },
+  {
+    "qid": "internal_direct_001",
+    "track": "Internal evaluation",
+    "question": "Which organization includes Isolde Mournvale as a member?",
+    "question_type": "direct_lookup",
+    "expected_answer": null,
+    "expected_sources": [],
+    "minimum_search_rounds": 1,
+    "notes": "Team-created direct-lookup test. Verify the expected answer and source against the archive. One search can be enough if it returns sufficient evidence."
+  },
+  {
+    "qid": "internal_nonsense_001",
+    "track": "Internal evaluation",
+    "question": "asdfgh qwerty zxcvbn ???",
+    "question_type": "nonsense_input",
+    "expected_answer": null,
+    "expected_sources": [],
+    "minimum_search_rounds": 0,
+    "notes": "Team-created robustness test. Acceptable behaviour is to request a clear question or explain that the input cannot be interpreted. It should not invent a lore answer or crash. No search is required."
   }
 ]

@@ -38,7 +38,9 @@ Results:
 - Produced an honest final answer explaining the dispute with citations rather than hallucinating a specific year.
 
 Conclusion:
-Confirms the evidence-checker and answer-generator correctly handle genuine "no answer exists" cases, not just answerable multi-hop questions.
+The agent kept all three rounds marked insufficient and did not
+invent a specific year in this mock-corpus test.
+Full-archive correctness and citation accuracy remain unverified.
 
 ## Experiment 003: Query sanitization verification
 Date: 2026-09-06
@@ -56,8 +58,59 @@ Configuration:
 Results:
 - All search_steps queries across both questions, all 3 rounds, are now
   free of stray quotes and control characters.
-- Both questions still produce correct, honest final answers
-  (disputed/unknown, no hallucination).
+- Neither response supplied a specific year.
+- Answer correctness remains unverified against the full archive.
 
 Conclusion:
 Fix verified with no regressions to answer quality or search behavior.
+
+
+## Experiment 004: Agent connected to evaluator
+
+Date: 2026-09-07
+Configuration: Actual agent with mock retrieval.
+Questions: 1c_000 and 1c_003.
+
+Results:
+- Both questions completed and results were saved.
+- Each question used three search rounds.
+- All rounds were marked insufficient.
+- Neither response supplied the requested year.
+- Expected answers and scores remain unverified.
+
+Conclusion:
+Evaluator-to-agent integration works.
+Full-archive answer and citation accuracy remain untested.
+
+
+## Experiment 005: Expanded five-question evaluation
+
+Configuration:
+- Actual agent connected to the evaluator.
+- Mock retrieval, based on the last confirmed search import.
+- Five questions tested.
+
+Observed results:
+- All five questions produced recorded responses.
+- Gloamreach and Gauntlet each exhausted three search rounds,
+  with all rounds marked insufficient.
+- Isolde multi-step question changed from insufficient in round 1
+  to sufficient in round 2.
+- Isolde direct question stopped after one sufficient round.
+- Nonsense input exhausted three rounds and declined to answer.
+
+Issues:
+- Gloamreach round 3 contained duplicated query text.
+- Nonsense input generated an empty initial query.
+- Nonsense input retrieved an unrelated war document.
+- Full-archive answer and citation correctness remain unverified.
+
+Next actions:
+- Member 2: investigate duplicated queries and empty-query handling.
+- Coordinate input validation with Member 3.
+- Connect Member 1's real retrieval before full-archive evaluation.
+- Verify expected answers and supporting passages before scoring.
+
+Conclusion:
+The expanded evaluation records direct, multi-step and invalid-input
+behaviour. These results do not establish full-archive accuracy.

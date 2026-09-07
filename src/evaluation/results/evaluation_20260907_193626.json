@@ -1,0 +1,130 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": null,
+    "actual_answer": "The sources do not provide a single, definitive year for the founding of Gloamreach. Both wiki entries explicitly note that the foundation year is **contested** and that “no founding year … appears” in the Annals or other primary records (gloamreach.md – wiki; the_annals_of_the_ash​en_era.docx – codex). Consequently, there is no precise year in the Age of Shadows that can be stated as the true founding date.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gloamreach",
+        "sources_found": 4,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gloamreach founding year Age of Shadows precise date",
+        "sources_found": 9,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gloamreach inception year Age of Shadows canon",
+        "sources_found": 9,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": null,
+    "actual_answer": "The provided sources do not contain any information about a “Gauntlet of Sorrowfell,” let alone the year it was forged. None of the wiki entries, codex excerpts, or ephemera mention that artifact, so a confident answer cannot be given based on the evidence supplied.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gauntlet of Sorrowfell",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gauntlet of Sorrowfell forged date year source citation",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Sorrowfell gauntlet forging year",
+        "sources_found": 2,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]
