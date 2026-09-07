@@ -114,3 +114,48 @@ Next actions:
 Conclusion:
 The expanded evaluation records direct, multi-step and invalid-input
 behaviour. These results do not establish full-archive accuracy.
+
+
+### Manual review of the two Isolde answers
+
+Reviewed result: evaluation_20260907_195840.json
+
+The saved result contains null expected answers.
+The expected answers were subsequently verified against the original
+archive and added to questions.json.
+
+- 1b_005: Answer score 2/2.
+  The response correctly identifies The War of Drowned Light.
+  Evidence: wiki/isolde_mournvale.md identifies The Silent Choir
+  as Isolde's organization; wiki/the_war_of_drowned_light.md
+  identifies The Silent Choir as victor.
+
+- internal_direct_001: Answer score 2/2.
+  The response correctly identifies The Silent Choir.
+  Evidence: wiki/isolde_mournvale.md, Infobox, Member of.
+
+These scores assess answer content only.
+Retrieval and citation scores remain unassessed.
+The run used mock retrieval based on the last confirmed configuration;
+it does not demonstrate successful full-archive retrieval.
+
+
+### Archive verification correction: Gloamreach and Gauntlet
+
+The original codex PDFs establish:
+- Gloamreach was founded in 246 AS.
+  Source: Codex Vaeloria I, PDF page 23.
+- Gauntlet of Sorrowfell was forged in 391 AS.
+  Source: Codex Vaeloria II, PDF page 11.
+
+These are answerable questions involving conflicting or incomplete
+sources, not verified no-answer questions.
+
+The earlier mock run did not retrieve the authoritative codex entries.
+Its responses failed to supply the correct years.
+
+The Gloamreach response also incorrectly generalized that the Codex
+contains no founding date. The Gauntlet refusal was limited to supplied
+evidence, but still did not answer the full-archive question.
+
+Next: test whether real retrieval returns these specific codex passages.
