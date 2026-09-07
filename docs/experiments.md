@@ -114,3 +114,27 @@ Next actions:
 Conclusion:
 The expanded evaluation records direct, multi-step and invalid-input
 behaviour. These results do not establish full-archive accuracy.
+
+
+### Manual review of the two Isolde answers
+
+Reviewed result: evaluation_20260907_195840.json
+
+The saved result contains null expected answers.
+The expected answers were subsequently verified against the original
+archive and added to questions.json.
+
+- 1b_005: Answer score 2/2.
+  The response correctly identifies The War of Drowned Light.
+  Evidence: wiki/isolde_mournvale.md identifies The Silent Choir
+  as Isolde's organization; wiki/the_war_of_drowned_light.md
+  identifies The Silent Choir as victor.
+
+- internal_direct_001: Answer score 2/2.
+  The response correctly identifies The Silent Choir.
+  Evidence: wiki/isolde_mournvale.md, Infobox, Member of.
+
+These scores assess answer content only.
+Retrieval and citation scores remain unassessed.
+The run used mock retrieval based on the last confirmed configuration;
+it does not demonstrate successful full-archive retrieval.
