@@ -41,7 +41,6 @@ Conclusion:
 Confirms the evidence-checker and answer-generator correctly handle genuine "no answer exists" cases, not just answerable multi-hop questions.
 
 ## Experiment 003: Query sanitization verification
-
 Date: 2026-09-06
 
 Goal:
