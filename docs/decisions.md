@@ -56,16 +56,6 @@ with round 1 marked insufficient and round 2 marked sufficient.
 Status:
 Accepted
 
-## Decision 004: Source authority hierarchy and cross-document pointer resolution
-
-Date: 2026-09-08
-
-Decision:
-Treat source categories with explicit hierarchical authority: Canonical reference works (Codex, Gazetteer) strictly override summary documents (Wiki) and informal materials (Ephemera, ballads, tavern rumors). When a lower-authority source hedges ("contested", "consult the Codex"), treat this as an explicit corpus pointer indicating the true fact exists in higher-authority documentation.
-
-Reason:
-Empirical analysis of the Ashen Era Archive reveals a deliberate design pattern: wiki articles frequently hedge controversial facts (e.g. Gloamreach founding date, Gauntlet forging date) and explicitly direct the reader to the Codex. If an agent treats all sources equally or stops at the wiki's hedge, it fails to answer answerable questions. Prioritizing Codex documents and ensuring they are thoroughly indexed in ChromaDB is required for full-archive retrieval accuracy.
-
 ## Decision 004: Streamlit UI architecture, dual-backend toggle, and search step transparency
 
 Date: 2026-09-07
@@ -82,6 +72,19 @@ Build an interactive Streamlit UI (`src/app.py`) incorporating:
 
 Reason:
 Track 1C judges evaluate how the system visibly reasons across rounds, detects missing information, and searches again. The visual timeline clearly demonstrates the difference between basic 1-shot RAG and Track 1C iterative search. Providing an offline simulation mode ensures the live 3-4 minute presentation is robust against network failures, rate limits, or API key issues while preserving full compatibility with the live backend.
+
+Status:
+Accepted
+
+## Decision 005: Source authority hierarchy and cross-document pointer resolution
+
+Date: 2026-09-08
+
+Decision:
+Treat source categories with explicit hierarchical authority: Canonical reference works (Codex, Gazetteer) strictly override summary documents (Wiki) and informal materials (Ephemera, ballads, tavern rumors). When a lower-authority source hedges ("contested", "consult the Codex"), treat this as an explicit corpus pointer indicating the true fact exists in higher-authority documentation.
+
+Reason:
+Empirical analysis of the Ashen Era Archive reveals a deliberate design pattern: wiki articles frequently hedge controversial facts (e.g. Gloamreach founding date, Gauntlet forging date) and explicitly direct the reader to the Codex. If an agent treats all sources equally or stops at the wiki's hedge, it fails to answer answerable questions. Prioritizing Codex documents and ensuring they are thoroughly indexed in ChromaDB is required for full-archive retrieval accuracy.
 
 Status:
 Accepted
