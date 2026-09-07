@@ -4,19 +4,59 @@
     "track": "1C: Searching the Way a Human Does",
     "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
     "question_type": "provided_1c",
-    "expected_answer": null,
-    "expected_sources": [],
-    "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+    "expected_answer": "246 AS",
+    "expected_sources": [
+      "codex/codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf"
+    ],
+    "minimum_search_rounds": 1,
+    "notes": "Verified against the original archive: Codex Vaeloria I, PDF page 23, Gloamreach entry, Founded = 246 AS. The codex explicitly rejects contrary popular accounts. The wiki's contested label should prompt consultation of the authoritative record. Additional searches are required when initial evidence is insufficient."
   },
   {
     "qid": "1c_003",
     "track": "1C: Searching the Way a Human Does",
     "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
     "question_type": "provided_1c",
+    "expected_answer": "391 AS",
+    "expected_sources": [
+      "codex/codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf"
+    ],
+    "minimum_search_rounds": 1,
+    "notes": "Verified against the original archive: Codex Vaeloria II, PDF page 11, Gauntlet of Sorrowfell entry, Forged = 391 AS. The codex explicitly rejects competing dates. Follow the wiki's reference to authoritative records rather than treating the date as unknowable."
+  },
+  {
+    "qid": "1b_005",
+    "track": "1B: Connecting Facts Across Thousands of Pages",
+    "question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
+    "question_type": "provided_1b_multihop",
+    "expected_answer": "The War of Drowned Light",
+    "expected_sources": [
+     "wiki/isolde_mournvale.md",
+      "wiki/the_war_of_drowned_light.md"
+    ],
+    "minimum_search_rounds": 1,
+    "notes": "Verified against the original archive: Isolde Mournvale's Infobox lists The Silent Choir under Member of. The War of Drowned Light's Infobox lists The Silent Choir as Victor. These two facts support the answer."
+  },
+  {
+    "qid": "internal_direct_001",
+    "track": "Internal evaluation",
+    "question": "Which organization includes Isolde Mournvale as a member?",
+    "question_type": "direct_lookup",
+    "expected_answer": "The Silent Choir",
+    "expected_sources": [
+      "wiki/isolde_mournvale.md"
+    ],
+    "minimum_search_rounds": 1,
+    "notes": "Verified against the original archive: wiki/isolde_mournvale.md, Infobox, Member of = The Silent Choir. One search is sufficient if it retrieves this evidence."
+  },
+  {
+    "qid": "internal_nonsense_001",
+    "track": "Internal evaluation",
+    "question": "asdfgh qwerty zxcvbn ???",
+    "question_type": "nonsense_input",
     "expected_answer": null,
     "expected_sources": [],
-    "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+    "minimum_search_rounds": 0,
+    "notes": "Team-created robustness test. Acceptable behaviour is to request a clear question or explain that the input cannot be interpreted. It should not invent a lore answer or crash. No search is required."
+
   }
 ]
