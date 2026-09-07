@@ -78,6 +78,10 @@ def answer_question(question: str) -> dict:
         if status == "sufficient" or round_num == MAX_ROUNDS:
             break
 
+        # Stop condition: if 2 consecutive rounds yielded 0 total evidence, stop to prevent query drift
+        if round_num >= 2 and len(accumulated_evidence) == 0:
+            break
+
         next_query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
         if not next_query.strip() or next_query.strip().lower() in [q.strip().lower() for q in previous_queries]:
             # Stop condition: rewriter cannot formulate a new distinct query

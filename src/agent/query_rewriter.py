@@ -17,7 +17,7 @@ list of queries already tried. Produce a new, short, keyword-style search query 
 specifically targets the missing information. It must be meaningfully different from
 every previously tried query -- do not just repeat or lightly reword them.
 
-Return ONLY the new query text, nothing else."""
+Return ONLY the new query text as a single line, nothing else -- do not repeat phrases."""
 
 
 def rewrite_query(question: str, missing_info: str, previous_queries: list[str]) -> str:
@@ -32,6 +32,19 @@ def rewrite_query(question: str, missing_info: str, previous_queries: list[str])
         )},
     ]
     query = call_llm(messages, temperature=0.3)
-    cleaned = query.replace('"', '').replace("'", "")
-    cleaned = re.sub(r'[\x00-\x1f\x7f]', '', cleaned)
-    return cleaned.strip()
+
+    # Take the first non-empty line in case model outputs multi-line responses
+    lines = [line.strip() for line in query.splitlines() if line.strip()]
+    raw_text = lines[0] if lines else ""
+
+    cleaned = raw_text.replace('"', '').replace("'", "")
+    # Strip non-whitespace control characters, normalize whitespace
+    cleaned = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', cleaned)
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+
+    # Deduplicate exact repeated concatenated phrases (e.g. PhrasePhrase -> Phrase)
+    dup_match = re.match(r"^(.{8,}?)\1+$", cleaned)
+    if dup_match:
+        cleaned = dup_match.group(1).strip()
+
+    return cleaned
