@@ -39,18 +39,33 @@ def _dedupe(evidence_list: list[dict]) -> list[dict]:
 
 
 def answer_question(question: str) -> dict:
+    cleaned_question = question.strip() if question else ""
+    if not cleaned_question or not any(c.isalnum() for c in cleaned_question):
+        return {
+            "answer": "Please provide a valid question about the Ashen Era Archive.",
+            "search_steps": [],
+            "sources": [],
+        }
+
     search_steps = []
     accumulated_evidence: list[dict] = []
     previous_queries: list[str] = []
 
-    query = plan_initial_query(question)
+    query = plan_initial_query(cleaned_question)
+    if not query.strip():
+        query = cleaned_question
 
     for round_num in range(1, MAX_ROUNDS + 1):
+        # Stop condition: prevent repeating duplicate search queries
+        normalized_query = query.strip().lower()
+        if normalized_query in [q.strip().lower() for q in previous_queries]:
+            break
+
         previous_queries.append(query)
         results = search(query, top_k=TOP_K)
         accumulated_evidence = _dedupe(accumulated_evidence + results)
 
-        check = check_sufficiency(question, accumulated_evidence)
+        check = check_sufficiency(cleaned_question, accumulated_evidence)
         status = check["status"]
 
         search_steps.append({
@@ -63,9 +78,14 @@ def answer_question(question: str) -> dict:
         if status == "sufficient" or round_num == MAX_ROUNDS:
             break
 
-        query = rewrite_query(question, check["missing_information"], previous_queries)
+        next_query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
+        if not next_query.strip() or next_query.strip().lower() in [q.strip().lower() for q in previous_queries]:
+            # Stop condition: rewriter cannot formulate a new distinct query
+            break
 
-    answer_text = generate_answer(question, accumulated_evidence)
+        query = next_query
+
+    answer_text = generate_answer(cleaned_question, accumulated_evidence)
 
     sources = [
         {"source": e["source"], "page": e.get("page")}
