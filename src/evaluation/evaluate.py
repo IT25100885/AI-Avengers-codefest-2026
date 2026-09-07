@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 from datetime import datetime
 
+from src.agent.search_agent import answer_question
+
 
 BASE_DIR = Path(__file__).resolve().parent
 QUESTIONS_FILE = BASE_DIR / "questions.json"
@@ -48,7 +50,7 @@ def mock_answer_question(question):
 def evaluate_question(question_data):
     """Run one question and prepare a result record."""
     q_text = question_data.get("question", "")
-    response = mock_answer_question(q_text)
+    response = answer_question(q_text)
 
     return {
         "id": question_data.get("id", question_data.get("qid", q_text)),

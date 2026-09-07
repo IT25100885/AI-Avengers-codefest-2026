@@ -1,0 +1,130 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": null,
+    "actual_answer": "The sources do not provide a single, definitive year for the founding of Gloamreach. Both wiki entries on Gloamreach explicitly state that the foundation year is **contested** and that no accepted year exists (“Founded: Contested; consult the Annals and Codex”)【gloamreach.md】. The entries from *The Annals of the Ashen Era* contain only individual office‑holder dates (e.g., Brannoc Ironmere assigned Edge of Gloamreach in 314 AS) but **no** record of a founding year for the location itself【the_annals_of_the_ashen_era.docx】.  \n\nBecause the available evidence contains no precise year and explicitly notes the disagreement, a confident answer cannot be given. The correct response, based on the provided sources, is that **no precise founding year is established in the Age of Shadows**.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gloamreach",
+        "sources_found": 4,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gloamreach founding year Age of Shadows precise date",
+        "sources_found": 9,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "canonical founding year Gloamreach Age of Shadows",
+        "sources_found": 9,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": null,
+    "actual_answer": "The provided sources contain no information about an item called the **“Gauntlet of Sorrowfell,”** let alone any date associated with its forging. None of the wiki entries, codex excerpts, or ephemera mention this gauntlet, so there is no evidence here from which to determine a forging year.\n\n**Answer:** The evidence given does not specify when the Gauntlet of Sorrowfell was forged.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gauntlet of Sorrowfell",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gauntlet of Sorrowfell forging year\u0000",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Sorrowfell gauntlet year of creation",
+        "sources_found": 8,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]

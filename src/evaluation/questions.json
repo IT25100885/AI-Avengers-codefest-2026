@@ -7,7 +7,7 @@
     "expected_answer": null,
     "expected_sources": [],
     "minimum_search_rounds": 2,
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
+    "notes": "Official sample question. Expected answer and sources must be identified from the corpus. Search-round count alone does not determine success."
   },
   {
     "qid": "1c_003",
@@ -17,9 +17,6 @@
     "expected_answer": null,
     "expected_sources": [],
     "minimum_search_rounds": 2,
-<<<<<<< Updated upstream
-    "notes": "Official sample question. Expected answer and sources must be identified from the corpus."
-=======
     "notes": "Official sample question. Expected answer and sources must be identified from the corpus. Search-round count alone does not determine success."
   },
   {
@@ -56,6 +53,6 @@
     "expected_sources": [],
     "minimum_search_rounds": 0,
     "notes": "Team-created robustness test. Acceptable behaviour is to request a clear question or explain that the input cannot be interpreted. It should not invent a lore answer or crash. No search is required."
->>>>>>> Stashed changes
+
   }
 ]

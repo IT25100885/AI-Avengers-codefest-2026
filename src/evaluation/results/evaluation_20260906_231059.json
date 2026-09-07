@@ -1,0 +1,130 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": null,
+    "actual_answer": "The sources do not provide a single, definitive year for the founding of Gloamreach. Both the wiki entry on Gloamreach and the codex (the Annals of the Ashen Era) explicitly note that the foundation date is contested and that no founding year appears in the surviving records. Consequently, a precise year in the Age of Shadows cannot be stated.\n\n**Sources**\n\n- *gloamreach.md* (wiki): “The recorded history of Gloamreach is inseparable from the uncertainty surrounding its foundation… no founding year is accepted as definitive… consult the Annals and Codex.”  \n- *the_annals_of_the_ashen_era.docx* (codex): Registry entries list individuals associated with Gloamreach but contain “no founding year for the location of Gloamreach itself.”  \n\nTherefore, the true founding year of Gloamreach remains unknown and cannot be precisely stated.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gloamreach",
+        "sources_found": 4,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gloamreach founding year Age of Shadows precise date",
+        "sources_found": 9,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gloamreach true founding recorded year Age of Shadows",
+        "sources_found": 9,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": 1
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": null,
+    "actual_answer": "I’m sorry, but none of the provided sources mention the “Gauntlet of Sorrowfell” or give any information about when it was forged. Because the evidence does not contain any reference to that artifact, I cannot give a confident answer.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gauntlet of Sorrowfell",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 2,
+        "query": "Gauntlet of Sorrowfell forging date year",
+        "sources_found": 8,
+        "status": "insufficient"
+      },
+      {
+        "round": 3,
+        "query": "Gauntlet of Sorrowfell smithing year",
+        "sources_found": 8,
+        "status": "insufficient"
+      }
+    ],
+    "sources": [
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": 1
+      },
+      {
+        "source": "gloamreach.md",
+        "page": 1
+      },
+      {
+        "source": "isolde_mournvale.md",
+        "page": 1
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": 1
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": 1
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": 1
+      },
+      {
+        "source": "ballad_concerning_vharenford.txt",
+        "page": 1
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]
