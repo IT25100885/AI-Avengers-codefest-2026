@@ -66,5 +66,22 @@ Treat source categories with explicit hierarchical authority: Canonical referenc
 Reason:
 Empirical analysis of the Ashen Era Archive reveals a deliberate design pattern: wiki articles frequently hedge controversial facts (e.g. Gloamreach founding date, Gauntlet forging date) and explicitly direct the reader to the Codex. If an agent treats all sources equally or stops at the wiki's hedge, it fails to answer answerable questions. Prioritizing Codex documents and ensuring they are thoroughly indexed in ChromaDB is required for full-archive retrieval accuracy.
 
+## Decision 004: Streamlit UI architecture, dual-backend toggle, and search step transparency
+
+Date: 2026-09-07
+
+Decision:
+Build an interactive Streamlit UI (`src/app.py`) incorporating:
+1. Visual multi-round execution cards displaying round number, reformulated query, retrieved source count, and sufficiency status badges (`Sufficient` / `Insufficient`).
+2. A dual-backend architecture with a sidebar selector:
+   - "Simulation Mode (Offline / Competition Demo)": Guarantees instant, deterministic multi-round responses for all competition question archetypes without external API keys or network latency.
+   - "Live Agent Pipeline": Directly connects to Member 2's `src.agent.search_agent.answer_question` for real-time model inference.
+3. Pre-configured benchmark buttons for 1-click evaluation by competition judges.
+4. Clean separation between user-facing query formulation and private internal chain-of-thought (avoiding raw prompt leakage).
+5. Granular source citation cards detailing document names and page numbers.
+
+Reason:
+Track 1C judges evaluate how the system visibly reasons across rounds, detects missing information, and searches again. The visual timeline clearly demonstrates the difference between basic 1-shot RAG and Track 1C iterative search. Providing an offline simulation mode ensures the live 3-4 minute presentation is robust against network failures, rate limits, or API key issues while preserving full compatibility with the live backend.
+
 Status:
 Accepted
