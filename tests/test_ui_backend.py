@@ -4,7 +4,7 @@ and integration with the Track 1C search agent.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 from src.ui.mock_backend import mock_answer_question, MOCK_DATABASE
 from src.agent.search_agent import answer_question
 
@@ -102,6 +102,20 @@ class TestUIBackendContract(unittest.TestCase):
         self.assertEqual(res["search_steps"], [])
         self.assertEqual(res["sources"], [])
 
+    def test_overly_broad_questions_strictly_rejected_in_simulation(self):
+        """Verify queries like Batman, population of Gloamreach, or Napoleon are rejected cleanly."""
+        prohibited_queries = [
+            "Which organization includes Batman as a member?",
+            "What is the population of Gloamreach?",
+            "Which war did Napoleon win?",
+        ]
+        for q in prohibited_queries:
+            res = mock_answer_question(q)
+            self.assertTrue(res.get("is_unsupported"), f"Query '{q}' should be marked unsupported!")
+            self.assertIn("No simulation available for this question", res["answer"])
+            self.assertEqual(res["search_steps"], [])
+            self.assertEqual(res["sources"], [])
+
     def test_empty_question_handling(self):
         """Verify empty question returns a friendly error without crashing."""
         res = mock_answer_question("")
@@ -111,19 +125,25 @@ class TestUIBackendContract(unittest.TestCase):
 
 
 class TestLiveAgentParametersAndCoordination(unittest.TestCase):
+    def test_live_agent_empty_and_whitespace_validation(self):
+        """Verify live agent handles empty or whitespace-only questions cleanly."""
+        res = answer_question("   ")
+        self.assertIn("No question was provided", res["answer"])
+        self.assertEqual(res["search_steps"], [])
+        self.assertEqual(res["sources"], [])
+
     @patch("src.agent.search_agent.generate_answer")
     @patch("src.agent.search_agent.check_sufficiency")
     @patch("src.agent.search_agent.search")
     @patch("src.agent.search_agent.plan_initial_query")
-    def test_live_agent_slider_parameter_max_rounds(
+    def test_live_agent_slider_parameter_max_rounds_and_cleaned_question(
         self, mock_plan, mock_search, mock_check, mock_gen
     ):
-        """Verify passing max_rounds=1 terminates the live agent loop after 1 round."""
+        """Verify passing max_rounds=1 terminates the loop and cleaned_question is used."""
         mock_plan.return_value = "Isolde Mournvale"
         mock_search.return_value = [
             {"chunk_id": "c1", "source": "isolde.md", "page": 1, "category": "wiki", "score": 0.9}
         ]
-        # Sufficiency returns insufficient, but max_rounds=1 forces stop
         mock_check.return_value = {
             "status": "insufficient",
             "missing_information": "War outcome missing",
@@ -131,17 +151,23 @@ class TestLiveAgentParametersAndCoordination(unittest.TestCase):
         }
         mock_gen.return_value = "Partial answer"
 
-        res = answer_question("Test question", max_rounds=1, top_k=7)
+        res = answer_question("   Test question with whitespace   ", max_rounds=1, top_k=7)
         self.assertEqual(len(res["search_steps"]), 1)
+        mock_plan.assert_called_with("Test question with whitespace")
+        mock_check.assert_called_with("Test question with whitespace", ANY)
         self.assertEqual(mock_search.call_count, 1)
         mock_search.assert_called_with("Isolde Mournvale", top_k=7)
         self.assertEqual(res["search_steps"][0]["missing_info"], "War outcome missing")
         self.assertEqual(res["sources"][0]["category"], "wiki")
 
     @patch("src.app.run_live_pipeline")
-    def test_no_automatic_fallback_on_live_failure(self, mock_live):
-        """Verify that execute_search in live mode returns None and does not fall back to simulation."""
+    def test_no_automatic_fallback_on_live_failure_and_clears_last_result(self, mock_live):
+        """Verify that execute_search in live mode returns None and clears previous last_result."""
+        import streamlit as st
         from src.app import execute_search
+
+        # Populate last_result with a previous active answer
+        st.session_state.last_result = {"answer": "Previous active answer", "search_steps": [], "sources": []}
 
         mock_live.side_effect = ValueError("GROQ_API_KEY is not set")
         res = execute_search(
@@ -150,7 +176,8 @@ class TestLiveAgentParametersAndCoordination(unittest.TestCase):
             max_rounds=3,
             top_k=15,
         )
-        self.assertIsNone(res, "execute_search must return None on error and not silently fall back to mock!")
+        self.assertIsNone(res, "execute_search must return None on error!")
+        self.assertIsNone(st.session_state.last_result, "st.session_state.last_result must be cleared on failure!")
 
 
 if __name__ == "__main__":

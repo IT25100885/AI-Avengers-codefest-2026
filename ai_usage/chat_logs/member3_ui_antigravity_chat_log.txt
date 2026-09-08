@@ -113,3 +113,31 @@ Implementation Details:
     with structured mock retrieval while Member 1's ChromaDB index is integrated.
   - Cleaned up duplicate sections in README.md.
   - Expanded tests/test_ui_backend.py with 11 comprehensive automated tests.
+
+================================================================================
+SECTION 5 — LIVE-AGENT CRASH FIX, STRICT SIMULATION MATCHING & UI STATE
+================================================================================
+User prompt:
+  "1. Fix the live-agent crash — in search_agent.py, cleaned_question is never defined.
+      Restore question validation and define cleaned_question = question.strip().
+   2. Restrict simulation matching to supported questions. Loose patterns matched
+      'Batman', 'population of Gloamreach', 'Napoleon'. Use exact normalized preset
+      questions or explicit preset IDs; reject everything else.
+   3. Clear the previous active result when a new search fails. Clear last_result
+      when starting a new search; retain previous results in history.
+   4. Fix the disclosure's chat-log links to use repository-relative paths."
+
+Implementation Details:
+  - In src/agent/search_agent.py: Added empty/whitespace validation, defined
+    cleaned_question = question.strip(), and referenced cleaned_question across all
+    planner, sufficiency checker, rewriter, and generator invocations.
+  - In src/ui/mock_backend.py: Replaced broad regex pattern matching with exact
+    normalized question matching (BENCHMARK_PRESETS) and preset IDs. Queries like
+    "Which organization includes Batman as a member?", "What is the population of Gloamreach?",
+    or "Which war did Napoleon win?" strictly trigger clean unsupported refusal.
+  - In src/app.py: Reset st.session_state.last_result = None at the start of every
+    search initiation so failing searches never display residual previous answers.
+  - In ai_usage/ai-usage-disclosure.md: Converted all absolute personal file URLs
+    to clean repository-relative paths (chat_logs/...).
+  - In tests/test_ui_backend.py: Expanded test suite to 13 automated tests covering
+    the four user edge cases; all 13 tests verified passing.

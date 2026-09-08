@@ -21,10 +21,21 @@ import re
 
 SIMULATION_BANNER = "[DEMONSTRATION / SIMULATION MODE: Pre-computed benchmark trace]\n\n"
 
-MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
-    # 1. Multi-Hop Investigation (1b_005: Which war was won...)
-    "isolde_war": {
-        "pattern": r"(which war|war.*won|war.*drowned|war.*silent choir)",
+
+def normalize_query(text: str) -> str:
+    """Normalize query text for exact benchmark matching."""
+    t = text.lower().strip()
+    t = re.sub(r'["\'\?\.\,\!\;\:\`\(\)\[\]]', '', t)
+    return " ".join(t.split())
+
+
+BENCHMARK_PRESETS: Dict[str, Dict[str, Any]] = {
+    # 1. Multi-Hop Investigation (1b_005)
+    "1b_005": {
+        "canonical_question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
+        "normalized_matches": {
+            "which war was won by the organization that included isolde mournvale as one of its members",
+        },
         "answer": (
             SIMULATION_BANNER +
             "The organization that counted Isolde Mournvale among its members was "
@@ -59,9 +70,12 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
         ],
     },
 
-    # 2. Direct Lookup (Which organization includes Isolde Mournvale as a member?)
-    "direct_membership": {
-        "pattern": r"(which organization|organization.*includes.*isolde|isolde.*member of)",
+    # 2. Direct Lookup (internal_direct_001)
+    "internal_direct_001": {
+        "canonical_question": "Which organization includes Isolde Mournvale as a member?",
+        "normalized_matches": {
+            "which organization includes isolde mournvale as a member",
+        },
         "answer": (
             SIMULATION_BANNER +
             "Isolde Mournvale is recorded as a member of **The Silent Choir** (*isolde_mournvale.md*).\n\n"
@@ -84,8 +98,11 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
     },
 
     # 3. Gloamreach Founding Year (1c_000: Corrected ground truth 246 AS)
-    "gloamreach": {
-        "pattern": r"(gloamreach|founding of gloamreach|founding year.*gloamreach)",
+    "1c_000": {
+        "canonical_question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+        "normalized_matches": {
+            "state the precise year in the age of shadows that marks the true founding of gloamreach",
+        },
         "answer": (
             SIMULATION_BANNER +
             "According to **Codex Vaeloria I: Gazetteer of the Sundered Realms** (page 23), "
@@ -121,8 +138,11 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
     },
 
     # 4. Gauntlet of Sorrowfell Forging Year (1c_003: Corrected ground truth 391 AS)
-    "gauntlet": {
-        "pattern": r"(gauntlet|sorrowfell)",
+    "1c_003": {
+        "canonical_question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+        "normalized_matches": {
+            "in which year was the gauntlet of sorrowfell actually forged",
+        },
         "answer": (
             SIMULATION_BANNER +
             "The **Gauntlet of Sorrowfell** was forged in **391 AS**.\n\n"
@@ -154,8 +174,11 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
     },
 
     # 5. Robustness / Nonsense Input (internal_nonsense_001)
-    "nonsense": {
-        "pattern": r"(asdfgh|qwerty|zxcvbn)",
+    "internal_nonsense_001": {
+        "canonical_question": "asdfgh qwerty zxcvbn ???",
+        "normalized_matches": {
+            "asdfgh qwerty zxcvbn",
+        },
         "answer": (
             SIMULATION_BANNER +
             "The input cannot be interpreted as a meaningful query regarding the Ashen Era Archive. "
@@ -175,16 +198,17 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
     },
 }
 
+# Backward compatibility map
+MOCK_DATABASE = BENCHMARK_PRESETS
+
 
 def mock_answer_question(question: str) -> Dict[str, Any]:
     """
     Produce a deterministic mock answer matching the team's agreed schema.
-    For unsupported questions, explicitly returns an unsupported notice instead
-    of inventing answers or fake search traces.
+    Strictly matches exact normalized preset questions or explicit preset IDs;
+    rejects any other questions cleanly without inventing answers.
     """
-    q_clean = question.strip().lower()
-
-    if not q_clean:
+    if not question or not question.strip():
         return {
             "answer": "No question was provided. Please enter an inquiry to search the archive.",
             "search_steps": [],
@@ -192,36 +216,49 @@ def mock_answer_question(question: str) -> Dict[str, Any]:
             "is_unsupported": False,
         }
 
-    # Match known benchmark scenarios
-    for scenario_key, scenario in MOCK_DATABASE.items():
-        if re.search(scenario["pattern"], q_clean):
-            # Preserve evidence-display fields: missing_info and category
-            clean_sources = [
-                {
-                    "source": s["source"],
-                    "page": s.get("page"),
-                    "category": s.get("category", "archive"),
-                }
-                for s in scenario["sources"]
-            ]
-            clean_steps = [
-                {
-                    "round": s["round"],
-                    "query": s["query"],
-                    "sources_found": s["sources_found"],
-                    "status": s["status"],
-                    "missing_info": s.get("missing_info", ""),
-                }
-                for s in scenario["search_steps"]
-            ]
-            return {
-                "answer": scenario["answer"],
-                "search_steps": clean_steps,
-                "sources": clean_sources,
-                "is_unsupported": False,
-            }
+    norm_q = normalize_query(question)
+    raw_clean = question.strip().lower()
 
-    # If question is not in pre-configured simulation benchmark, refuse cleanly:
+    # Match by explicit preset ID or exact normalized benchmark question
+    matched_scenario = None
+    for preset_id, scenario in BENCHMARK_PRESETS.items():
+        if raw_clean == preset_id.lower():
+            matched_scenario = scenario
+            break
+        for target in scenario["normalized_matches"]:
+            if norm_q == normalize_query(target) or raw_clean == target.lower():
+                matched_scenario = scenario
+                break
+        if matched_scenario:
+            break
+
+    if matched_scenario:
+        clean_sources = [
+            {
+                "source": s["source"],
+                "page": s.get("page"),
+                "category": s.get("category", "archive"),
+            }
+            for s in matched_scenario["sources"]
+        ]
+        clean_steps = [
+            {
+                "round": s["round"],
+                "query": s["query"],
+                "sources_found": s["sources_found"],
+                "status": s["status"],
+                "missing_info": s.get("missing_info", ""),
+            }
+            for s in matched_scenario["search_steps"]
+        ]
+        return {
+            "answer": matched_scenario["answer"],
+            "search_steps": clean_steps,
+            "sources": clean_sources,
+            "is_unsupported": False,
+        }
+
+    # Strict rejection of unsupported questions in simulation mode
     return {
         "answer": (
             "No simulation available for this question. Simulation mode only supports pre-configured "

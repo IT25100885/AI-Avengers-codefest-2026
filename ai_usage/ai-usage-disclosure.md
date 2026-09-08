@@ -29,6 +29,6 @@ AI assistance was utilized across the following areas of the codebase:
 
 ## Detailed Logs
 Complete transcripts and interaction logs are available in the `ai_usage/chat_logs/` folder:
-- [Claude AI Usage Log (`ai_usage/chat_logs/claude_chat_log.txt`)](file:///Users/abdullahfawmy/Documents/GitHub/AI-Avengers-codefest-2026/ai_usage/chat_logs/claude_chat_log.txt)
-- [Antigravity AI Usage Log - Member 2 (`ai_usage/chat_logs/antigravity_chat_log.txt`)](file:///Users/abdullahfawmy/Documents/GitHub/AI-Avengers-codefest-2026/ai_usage/chat_logs/antigravity_chat_log.txt)
-- [Antigravity AI Usage Log - Member 3 UI (`ai_usage/chat_logs/member3_ui_antigravity_chat_log.txt`)](file:///c:/Users/Dell/Desktop/AI%20Avengers/AI-Avengers-codefest-2026/ai_usage/chat_logs/member3_ui_antigravity_chat_log.txt)
+- [Claude AI Usage Log](chat_logs/claude_chat_log.txt)
+- [Antigravity AI Usage Log - Member 2](chat_logs/antigravity_chat_log.txt)
+- [Antigravity AI Usage Log - Member 3 UI](chat_logs/member3_ui_antigravity_chat_log.txt)
