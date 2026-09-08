@@ -1,6 +1,6 @@
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from src.agent.search_agent import answer_question
 
@@ -11,67 +11,42 @@ RESULTS_DIRECTORY = BASE_DIR / "results"
 
 
 def load_questions():
-    """Read evaluation questions from the JSON file."""
+    """Load evaluation questions from questions.json."""
     with QUESTIONS_FILE.open("r", encoding="utf-8") as file:
         return json.load(file)
 
 
-def mock_answer_question(question):
-    """
-    Temporary fake backend response.
-
-    Later, replace this with Member 2's real answer_question function.
-    """
-    return {
-        "answer": "Temporary test answer",
-        "search_steps": [
-            {
-                "round": 1,
-                "query": question,
-                "sources_found": 3,
-                "status": "insufficient"
-            },
-            {
-                "round": 2,
-                "query": f"More information about: {question}",
-                "sources_found": 2,
-                "status": "sufficient"
-            }
-        ],
-        "sources": [
-            {
-                "source": "sample-document.pdf",
-                "page": 1
-            }
-        ]
-    }
-
-
 def evaluate_question(question_data):
-    """Run one question and prepare a result record."""
-    q_text = question_data.get("question", "")
-    response = answer_question(q_text)
+    """Run one evaluation question through the real reasoning agent."""
+    question_text = question_data.get("question", "")
+
+    response = answer_question(question_text)
 
     return {
-        "id": question_data.get("id", question_data.get("qid", q_text)),
-        "question": q_text,
+        "id": question_data.get(
+            "id",
+            question_data.get("qid", question_text)
+        ),
+        "question": question_text,
         "expected_answer": question_data.get("expected_answer"),
         "actual_answer": response.get("answer"),
         "search_steps": response.get("search_steps", []),
         "sources": response.get("sources", []),
 
-        # These will initially be checked manually.
+        # Final scores are reviewed manually.
         "retrieval_score": None,
         "answer_score": None,
         "citation_score": None,
         "search_round_score": None,
+
+        # Fill these after reviewing the result.
         "failure_reason": None,
         "reviewer_notes": ""
     }
 
 
 def save_results(results):
-    """Save results without overwriting an earlier evaluation."""
+    """Save evaluation results without overwriting previous runs."""
     RESULTS_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -88,8 +63,16 @@ def main():
     results = []
 
     for question in questions:
-        qid_display = question.get("id", question.get("qid", "<no-id>"))
-        print(f"Testing {qid_display}: {question.get('question', '')}")
+        question_id = question.get(
+            "id",
+            question.get("qid", "<no-id>")
+        )
+
+        print(
+            f"Testing {question_id}: "
+            f"{question.get('question', '')}"
+        )
+
         result = evaluate_question(question)
         results.append(result)
 

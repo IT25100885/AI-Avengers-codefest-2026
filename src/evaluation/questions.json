@@ -57,6 +57,45 @@
     "expected_sources": [],
     "minimum_search_rounds": 0,
     "notes": "Team-created robustness test. Acceptable behaviour is to request a clear question or explain that the input cannot be interpreted. It should not invent a lore answer or crash. No search is required."
+  },
+  {
+  "qid": "1b_007",
+  "track": "1B: Connecting Facts Across Thousands of Pages",
+  "question": "Which accord was ultimately won by the faction of which Ederon Fellgard is a member?",
+  "question_type": "provided_1b_multihop",
+  "expected_answer": "The Leaden Accord",
+  "expected_sources": [
+    "wiki/ederon_fellgard.md",
+    "wiki/the_leaden_accord.md"
+  ],
+  "minimum_search_rounds": 1,
+  "notes": "Verified against the original archive: Ederon Fellgard is a member of The Iron-Ring Cartel. The Leaden Accord records The Iron-Ring Cartel as the victor."
+  },
+{
+  "qid": "1b_022",
+  "track": "1B: Connecting Facts Across Thousands of Pages",
+  "question": "Which war did Ravena Stormwell's own faction ultimately win?",
+  "question_type": "provided_1b_multihop",
+  "expected_answer": "The War of Drowned Light",
+  "expected_sources": [
+    "wiki/ravena_stormwell.md",
+    "wiki/the_war_of_drowned_light.md"
+  ],
+  "minimum_search_rounds": 1,
+  "notes": "Verified against the original archive: Ravena Stormwell is a member of The Silent Choir. The War of Drowned Light records The Silent Choir as the victor."
+},
+{
+  "qid": "1b_003",
+  "track": "1B: Connecting Facts Across Thousands of Pages",
+  "question": "To which shadowed redoubt must one journey to examine the relic long borne by Cerys Sablewood the Ashen since 356 AS?",
+  "question_type": "provided_1b_multihop",
+  "expected_answer": "Gloamreach",
+  "expected_sources": [
+    "wiki/cerys_sablewood_the_ashen.md",
+    "wiki/the_cinder_wrought_aegis.md"
+  ],
+  "minimum_search_rounds": 1,
+  "notes": "Verified against the original archive: Cerys Sablewood the Ashen has wielded The Cinder-Wrought Aegis since 356 AS. The artifact's article states that The Cinder-Wrought Aegis is housed in Gloamreach."
+}
 
-  }
 ]
