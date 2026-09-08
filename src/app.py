@@ -26,16 +26,16 @@ load_dotenv(PROJECT_ROOT / ".env")
 
 from src.ui.mock_backend import mock_answer_question
 
-# Preset questions for fast judging and demo
+# Preset benchmark questions for fast judging and demo
 PRESET_QUESTIONS = {
     "Select a preset question...": "",
     "🔥 [1b_005 Multi-Hop] Which war was won by the organization that included Isolde Mournvale as one of its members?": (
         "Which war was won by the organization that included Isolde Mournvale as one of its members?"
     ),
-    "⚖️ [1c_000 Contested Lore] State the precise year in the Age of Shadows that marks the true founding of Gloamreach.": (
+    "🏛️ [1c_000 Multi-Round Benchmark] State the precise year in the Age of Shadows that marks the true founding of Gloamreach.": (
         "State the precise year in the Age of Shadows that marks the true founding of Gloamreach."
     ),
-    "❓ [1c_003 Unrecorded Item] In which year was the 'Gauntlet of Sorrowfell' actually forged?": (
+    "⚔️ [1c_003 Multi-Round Benchmark] In which year was the 'Gauntlet of Sorrowfell' actually forged?": (
         "In which year was the 'Gauntlet of Sorrowfell' actually forged?"
     ),
     "🎯 [Direct Lookup] Which organization includes Isolde Mournvale as a member?": (
@@ -67,9 +67,9 @@ st.markdown(
         margin-bottom: 0.2rem;
     }
     .sub-header {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         color: #64748B;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
     }
     .track-badge {
         background-color: #EEF2FF;
@@ -118,6 +118,15 @@ st.markdown(
         padding: 1.3rem;
         margin: 1rem 0;
     }
+    .sim-banner {
+        background-color: #FEF3C7;
+        border-left: 5px solid #F59E0B;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        font-weight: 500;
+        color: #78350F;
+    }
     .source-card {
         background-color: #FFFFFF;
         border: 1px solid #E2E8F0;
@@ -149,14 +158,14 @@ if "preset_choice" not in st.session_state:
 # -----------------------------------------------------------------------------
 # Backend Invocation Handlers
 # -----------------------------------------------------------------------------
-def run_live_pipeline(question: str) -> Dict[str, Any]:
+def run_live_pipeline(question: str, max_rounds: int, top_k: int) -> Dict[str, Any]:
     """Execute live reasoning agent from Member 2's src.agent.search_agent."""
     from src.agent.search_agent import answer_question
-    return answer_question(question)
+    return answer_question(question, max_rounds=max_rounds, top_k=top_k)
 
 
-def execute_search(question: str, mode: str) -> Optional[Dict[str, Any]]:
-    """Execute query via selected backend with friendly error handling."""
+def execute_search(question: str, mode: str, max_rounds: int, top_k: int) -> Optional[Dict[str, Any]]:
+    """Execute query via selected backend with strict error boundaries and no auto-fallback."""
     clean_q = question.strip()
     if not clean_q:
         st.warning("⚠️ Please enter a question or select a preset before searching.")
@@ -167,24 +176,29 @@ def execute_search(question: str, mode: str) -> Optional[Dict[str, Any]]:
 
     if mode == "Simulation Mode (Offline / Competition Demo)":
         with st.spinner("Executing human-like iterative search simulation..."):
-            time.sleep(0.6)  # Realistic presentation pacing
+            time.sleep(0.5)  # Realistic demo pacing
             result = mock_answer_question(clean_q)
+            result["mode_type"] = "SIMULATION"
     else:
-        with st.spinner("Connecting to Live Reasoning Agent (Groq LLM + Archive)..."):
+        with st.spinner(f"Connecting to Live Reasoning Agent (Groq LLM | Max Rounds: {max_rounds}, Top-K: {top_k})..."):
             try:
-                result = run_live_pipeline(clean_q)
+                result = run_live_pipeline(clean_q, max_rounds=max_rounds, top_k=top_k)
+                result["mode_type"] = "LIVE AGENT"
             except ValueError as ve:
                 st.error(
-                    f"⚠️ Live Agent Configuration Notice: {ve}\n\n"
-                    "Tip: Switch to **Simulation Mode** in the sidebar to run without external API keys!"
+                    f"❌ **Live Agent Configuration Error**: {ve}\n\n"
+                    "**How to resolve**: Set `GROQ_API_KEY` in your `.env` file, or select "
+                    "**Simulation Mode** in the sidebar for offline presentation."
                 )
                 return None
             except Exception as e:
                 st.error(
-                    f"⚠️ Live Agent Encountered an Error: {str(e)}\n\n"
-                    "Falling back to Simulation Mode for this query..."
+                    f"❌ **Live Agent Execution Error**: {str(e)}\n\n"
+                    "**Note**: Automatic fallback to simulation is disabled to preserve error transparency. "
+                    "If you wish to test pre-recorded benchmarks without live LLM access, please manually switch "
+                    "to **Simulation Mode** in the sidebar."
                 )
-                result = mock_answer_question(clean_q)
+                return None
 
     elapsed = round(time.time() - start_time, 2)
     if result:
@@ -213,22 +227,41 @@ with st.sidebar:
             "Live Agent Pipeline (src.agent.search_agent)",
         ],
         index=0,
-        help="Simulation Mode runs deterministic multi-round traces without API keys. Live Agent calls Groq and the real pipeline.",
+        help=(
+            "Simulation Mode: Deterministic benchmark traces for offline judging. "
+            "Live Agent Pipeline: Live Groq LLM reasoning loop."
+        ),
     )
 
-    # Health check for API key
-    groq_key = os.getenv("GROQ_API_KEY")
-    if groq_key and not groq_key.startswith("your_"):
-        st.success("🟢 GROQ API Key: Configured")
+    is_live_mode = (backend_mode == "Live Agent Pipeline (src.agent.search_agent)")
+
+    # Status callout regarding retrieval pipeline
+    if is_live_mode:
+        groq_key = os.getenv("GROQ_API_KEY")
+        if groq_key and not groq_key.startswith("your_"):
+            st.success("🟢 GROQ API Key: Configured")
+        else:
+            st.error("🔴 GROQ API Key: Missing (Live calls will fail)")
+
+        st.info(
+            "ℹ️ **Retrieval Status**: Live Mode currently uses the Groq LLM with "
+            "structured mock retrieval (`src.retrieval.mock_search`). Full-archive ChromaDB "
+            "vector retrieval is being integrated by Member 1."
+        )
     else:
-        st.info("ℹ️ GROQ API Key: Not set (Simulation Mode ready)")
+        st.info("ℹ️ **Simulation Mode Active**: Running verified pre-recorded benchmark traces.")
 
     st.markdown("---")
     st.markdown("### Agent Parameters")
-    max_rounds = st.slider("Max Search Rounds", min_value=1, max_value=5, value=3)
-    top_k = st.slider("Retrieval Top-K", min_value=5, max_value=25, value=15)
-    os.environ["MAX_SEARCH_ROUNDS"] = str(max_rounds)
-    os.environ["SEARCH_TOP_K"] = str(top_k)
+
+    if is_live_mode:
+        max_rounds = st.slider("Max Search Rounds", min_value=1, max_value=5, value=3, key="live_max_rounds")
+        top_k = st.slider("Retrieval Top-K", min_value=5, max_value=25, value=15, key="live_top_k")
+        st.caption("⚙️ Parameters are dynamically passed to the live search loop.")
+    else:
+        max_rounds = st.slider("Max Search Rounds", min_value=1, max_value=5, value=3, disabled=True, key="sim_max_rounds")
+        top_k = st.slider("Retrieval Top-K", min_value=5, max_value=25, value=15, disabled=True, key="sim_top_k")
+        st.caption("🔒 *Sliders are disabled in Simulation Mode (traces are fixed). Enable Live Agent Mode to customize parameters.*")
 
     st.markdown("---")
     st.markdown("### Team & Project")
@@ -263,7 +296,7 @@ st.markdown(
 )
 
 # Preset Question Selector
-col_preset, col_btn = st.columns([4, 1])
+col_preset, _ = st.columns([4, 1])
 with col_preset:
     selected_preset = st.selectbox(
         "Choose a competition benchmark question or type below:",
@@ -299,7 +332,7 @@ with col_action2:
 # Run search on button click
 if search_clicked:
     st.session_state.current_question = user_input
-    execute_search(user_input, backend_mode)
+    execute_search(user_input, backend_mode, max_rounds=max_rounds, top_k=top_k)
 
 
 # -----------------------------------------------------------------------------
@@ -309,124 +342,159 @@ current_res = st.session_state.last_result
 
 if current_res:
     st.markdown("---")
-    st.subheader("📊 Search Execution & Evidence Trail")
 
-    search_steps: List[Dict[str, Any]] = current_res.get("search_steps", [])
-    sources: List[Dict[str, Any]] = current_res.get("sources", [])
-    answer_text: str = current_res.get("answer", "")
-    elapsed = current_res.get("elapsed_time", 0.0)
-
-    # Metrics Summary Row
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.metric("Total Search Rounds", len(search_steps))
-    with m2:
-        total_retrieved = sum(s.get("sources_found", 0) for s in search_steps)
-        st.metric("Total Documents Inspected", total_retrieved)
-    with m3:
-        final_status = search_steps[-1]["status"] if search_steps else "unknown"
-        st.metric("Final Evidence Status", final_status.capitalize())
-    with m4:
-        st.metric("Execution Time", f"{elapsed}s")
-
-    # Multi-Round Timeline Visualization
-    st.markdown("#### 🔄 Iterative Search Rounds")
-    for step in search_steps:
-        r_num = step.get("round", 1)
-        query = step.get("query", "")
-        count = step.get("sources_found", 0)
-        status = step.get("status", "insufficient")
-        missing_info = step.get("missing_info")
-
-        is_sufficient = (status == "sufficient")
-        card_class = "step-sufficient" if is_sufficient else "step-insufficient"
-        badge_html = (
-            '<span class="status-badge-sufficient">✅ Sufficient Evidence</span>'
-            if is_sufficient
-            else '<span class="status-badge-insufficient">⚠️ Insufficient Evidence (Searching Again)</span>'
-        )
-
+    # Check for unsupported simulation query
+    if current_res.get("is_unsupported"):
+        st.warning("⚠️ **Simulation Not Available for this Question**")
         st.markdown(
             f"""
-            <div class="step-card {card_class}">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <strong>Round {r_num} Search</strong>
-                    {badge_html}
+            <div class="step-card step-insufficient">
+                <strong>Unsupported Question Notice:</strong><br>
+                {current_res.get("answer")}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        # Check simulation label
+        is_sim = (current_res.get("mode_type") == "SIMULATION")
+        if is_sim:
+            st.markdown(
+                '<div class="sim-banner">'
+                '📢 <strong>DEMONSTRATION / SIMULATION MODE</strong>: '
+                'This answer and search trail are pre-recorded benchmark demonstrations for competition judging. '
+                'They reflect expected Track 1C multi-round evaluation traces.'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+
+        st.subheader("📊 Search Execution & Evidence Trail")
+
+        search_steps: List[Dict[str, Any]] = current_res.get("search_steps", [])
+        sources: List[Dict[str, Any]] = current_res.get("sources", [])
+        answer_text: str = current_res.get("answer", "")
+        elapsed = current_res.get("elapsed_time", 0.0)
+
+        # Metrics Summary Row
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            st.metric("Total Search Rounds", len(search_steps))
+        with m2:
+            total_retrieved = sum(s.get("sources_found", 0) for s in search_steps)
+            st.metric("Total Documents Inspected", total_retrieved)
+        with m3:
+            final_status = search_steps[-1]["status"] if search_steps else "unknown"
+            st.metric("Final Evidence Status", final_status.capitalize())
+        with m4:
+            st.metric("Execution Time", f"{elapsed}s")
+
+        # Multi-Round Timeline Visualization
+        st.markdown("#### 🔄 Iterative Search Rounds")
+        for step in search_steps:
+            r_num = step.get("round", 1)
+            query = step.get("query", "")
+            count = step.get("sources_found", 0)
+            status = step.get("status", "insufficient")
+            missing_info = step.get("missing_info", "")
+
+            is_sufficient = (status == "sufficient")
+            card_class = "step-sufficient" if is_sufficient else "step-insufficient"
+            badge_html = (
+                '<span class="status-badge-sufficient">✅ Sufficient Evidence</span>'
+                if is_sufficient
+                else '<span class="status-badge-insufficient">⚠️ Insufficient Evidence (Searching Again)</span>'
+            )
+
+            st.markdown(
+                f"""
+                <div class="step-card {card_class}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong>Round {r_num} Search</strong>
+                        {badge_html}
+                    </div>
+                    <div><strong>Query Used:</strong> <code>{query}</code></div>
+                    <div style="color: #475569; font-size: 0.9rem; margin-top: 0.3rem;">
+                        <strong>Retrieved Chunks:</strong> {count} documents
+                    </div>
                 </div>
-                <div><strong>Query Used:</strong> <code>{query}</code></div>
-                <div style="color: #475569; font-size: 0.9rem; margin-top: 0.3rem;">
-                    <strong>Retrieved Chunks:</strong> {count} documents
-                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            if missing_info and not is_sufficient:
+                st.caption(f"💡 *Missing Information / Decision Trail:* {missing_info}")
+
+        # Grounded Final Answer Section
+        st.markdown("#### 📜 Grounded Final Answer")
+        st.markdown(
+            f"""
+            <div class="answer-box">
+                {answer_text}
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        if missing_info and not is_sufficient:
-            st.caption(f"💡 *Agent Decision Trail:* {missing_info}")
+        # Cited Sources Section
+        st.markdown("#### 📚 Citations & Authoritative Sources")
+        if sources:
+            cols = st.columns(2)
+            for idx, src in enumerate(sources):
+                col_idx = idx % 2
+                with cols[col_idx]:
+                    doc_name = src.get("source", "Unknown Document")
+                    page_info = f"Page {src.get('page')}" if src.get("page") is not None else "Page N/A"
+                    cat = src.get("category", "archive")
+                    st.markdown(
+                        f"""
+                        <div class="source-card">
+                            📄 <strong>{doc_name}</strong> &nbsp;•&nbsp; <code>{page_info}</code>
+                            <div style="font-size: 0.8rem; color: #64748B;">Category: <em>{cat}</em></div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+        else:
+            st.info("No authoritative sources were retrieved.")
 
-    # Grounded Final Answer Section
-    st.markdown("#### 📜 Grounded Final Answer")
-    st.markdown(
-        f"""
-        <div class="answer-box">
-            {answer_text}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Cited Sources Section
-    st.markdown("#### 📚 Citations & Authoritative Sources")
-    if sources:
-        cols = st.columns(2)
-        for idx, src in enumerate(sources):
-            col_idx = idx % 2
-            with cols[col_idx]:
-                doc_name = src.get("source", "Unknown Document")
-                page_info = f"Page {src.get('page')}" if src.get("page") is not None else "Page N/A"
-                cat = src.get("category", "Archive Record")
-                st.markdown(
-                    f"""
-                    <div class="source-card">
-                        📄 <strong>{doc_name}</strong> &nbsp;•&nbsp; <code>{page_info}</code>
-                        <div style="font-size: 0.8rem; color: #64748B;">Category: {cat}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-    else:
-        st.info("No authoritative sources could be matched to the query.")
-
-    # Data Contract Inspector for Judges
-    with st.expander("🔍 Inspect Official Data Contract JSON (Sub-track 1C Specification)"):
-        clean_contract = {
-            "answer": answer_text,
-            "search_steps": [
-                {
-                    "round": s["round"],
-                    "query": s["query"],
-                    "sources_found": s["sources_found"],
-                    "status": s["status"],
-                }
-                for s in search_steps
-            ],
-            "sources": [
-                {"source": s["source"], "page": s.get("page")}
-                for s in sources
-            ],
-        }
-        st.json(clean_contract)
+        # Data Contract Inspector for Judges
+        with st.expander("🔍 Inspect Official Data Contract JSON (Sub-track 1C Specification)"):
+            clean_contract = {
+                "answer": answer_text,
+                "search_steps": [
+                    {
+                        "round": s["round"],
+                        "query": s["query"],
+                        "sources_found": s["sources_found"],
+                        "status": s["status"],
+                        "missing_info": s.get("missing_info", ""),
+                    }
+                    for s in search_steps
+                ],
+                "sources": [
+                    {
+                        "source": s["source"],
+                        "page": s.get("page"),
+                        "category": s.get("category", "archive"),
+                    }
+                    for s in sources
+                ],
+            }
+            st.json(clean_contract)
 
 
 # -----------------------------------------------------------------------------
-# Historical Search Trail (for 3-4 minute presentation)
+# Historical Search Trail (with explicit mode labeling)
 # -----------------------------------------------------------------------------
 if len(st.session_state.history) > 1:
     st.markdown("---")
     st.subheader("🗂️ Session Question History")
     with st.expander(f"Review previous questions ({len(st.session_state.history)} searches executed)"):
         for i, item in enumerate(reversed(st.session_state.history[:-1])):
-            st.markdown(f"**Q{len(st.session_state.history)-1-i}:** *{item.get('question')}*")
-            st.caption(f"Rounds: {len(item.get('search_steps', []))} | Sources: {len(item.get('sources', []))}")
+            mode_tag = f"[{item.get('mode_type', 'SIMULATION')}]"
+            st.markdown(f"**{mode_tag} Q{len(st.session_state.history)-1-i}:** *{item.get('question')}*")
+            if item.get("is_unsupported"):
+                st.caption("Result: Unsupported in simulation mode")
+            else:
+                st.caption(f"Rounds: {len(item.get('search_steps', []))} | Sources: {len(item.get('sources', []))}")
             st.markdown("---")

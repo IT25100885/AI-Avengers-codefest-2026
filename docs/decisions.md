@@ -58,20 +58,24 @@ Accepted
 
 ## Decision 004: Streamlit UI architecture, dual-backend toggle, and search step transparency
 
-Date: 2026-09-07
+Date: 2026-09-07 (Updated: 2026-09-08)
 
 Decision:
 Build an interactive Streamlit UI (`src/app.py`) incorporating:
 1. Visual multi-round execution cards displaying round number, reformulated query, retrieved source count, and sufficiency status badges (`Sufficient` / `Insufficient`).
 2. A dual-backend architecture with a sidebar selector:
-   - "Simulation Mode (Offline / Competition Demo)": Guarantees instant, deterministic multi-round responses for all competition question archetypes without external API keys or network latency.
+   - "Simulation Mode (Offline / Competition Demo)": Guarantees instant, deterministic multi-round responses for official benchmark questions without external API keys or network latency.
    - "Live Agent Pipeline": Directly connects to Member 2's `src.agent.search_agent.answer_question` for real-time model inference.
-3. Pre-configured benchmark buttons for 1-click evaluation by competition judges.
-4. Clean separation between user-facing query formulation and private internal chain-of-thought (avoiding raw prompt leakage).
-5. Granular source citation cards detailing document names and page numbers.
+3. Strict operational boundaries:
+   - No automatic fallback: If the live agent fails (e.g. missing API keys or rate limits), the error is displayed transparently rather than silently falling back to mock data.
+   - Strict simulation scope: Arbitrary questions entered in simulation mode return an explicit refusal ("No simulation available for this question") rather than invented lore or fake traces.
+   - Explicit labeling: Every simulated answer visibly declares it is a pre-recorded benchmark demonstration, including in session history.
+4. Parameter coordination: Sidebar sliders for Max Search Rounds and Top-K retrieval are dynamically passed to `answer_question(question, max_rounds, top_k)` in live mode, and disabled in simulation mode.
+5. Evidence field preservation: `missing_info` in search steps and `category` in source citations are preserved across both backends.
+6. Ground-truth benchmark alignment: Benchmark answers are strictly aligned with `src/evaluation/questions.json` (Gloamreach: 246 AS via Codex Vaeloria I, Gauntlet: 391 AS via Codex Vaeloria II).
 
 Reason:
-Track 1C judges evaluate how the system visibly reasons across rounds, detects missing information, and searches again. The visual timeline clearly demonstrates the difference between basic 1-shot RAG and Track 1C iterative search. Providing an offline simulation mode ensures the live 3-4 minute presentation is robust against network failures, rate limits, or API key issues while preserving full compatibility with the live backend.
+Track 1C judges evaluate how the system visibly reasons across rounds, detects missing information, and searches again. The visual timeline clearly demonstrates the difference between basic 1-shot RAG and Track 1C iterative search. Eliminating silent fallbacks and preventing simulation hallucination guarantees evaluation integrity during judging.
 
 Status:
 Accepted
