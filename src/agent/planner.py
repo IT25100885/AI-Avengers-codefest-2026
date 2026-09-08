@@ -52,11 +52,33 @@ Return ONLY the query text, nothing else -- no quotes, no explanation."""
 
 
 def plan_initial_query(question: str) -> str:
+    cleaned_input = question.strip() if question else ""
+    if not cleaned_input or not any(c.isalnum() for c in cleaned_input):
+        return ""
+
     messages = [
         {"role": "system", "content": PLANNER_SYSTEM_PROMPT},
-        {"role": "user", "content": f"Question: {question}\nQuery:"},
+        {"role": "user", "content": f"Question: {cleaned_input}\nQuery:"},
     ]
     query = call_llm(messages, temperature=0.0)
-    cleaned = query.replace('"', '').replace("'", "")
-    cleaned = re.sub(r'[\x00-\x1f\x7f]', '', cleaned)
-    return cleaned.strip()
+
+    # Take the first non-empty line in case model outputs multi-line responses
+    lines = [line.strip() for line in query.splitlines() if line.strip()]
+    raw_text = lines[0] if lines else ""
+
+    cleaned = raw_text.replace('"', '').replace("'", "")
+    # Strip non-whitespace control characters, normalize whitespace
+    cleaned = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', cleaned)
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+
+    # Deduplicate exact repeated concatenated phrases (e.g. PhrasePhrase -> Phrase)
+    dup_match = re.match(r"^(.{8,}?)\1+$", cleaned)
+    if dup_match:
+        cleaned = dup_match.group(1).strip()
+
+    # Fallback if model returned empty or "None"
+    if not cleaned or cleaned.lower() in ("none", "n/a", "null", "no entity", "none."):
+        words = re.findall(r'\b[A-Za-z0-9_-]+\b', cleaned_input)
+        cleaned = " ".join(words[:4]) if words else cleaned_input
+
+    return cleaned

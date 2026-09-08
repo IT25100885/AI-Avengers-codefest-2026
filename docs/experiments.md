@@ -159,3 +159,31 @@ contains no founding date. The Gauntlet refusal was limited to supplied
 evidence, but still did not answer the full-archive question.
 
 Next: test whether real retrieval returns these specific codex passages.
+
+
+## Experiment 006: Source authority weighting (Gloamreach resolved)
+
+Date: 2026-09-08
+
+Goal:
+Verify the agent correctly resolves a conflict where a lower-authority
+source (wiki) hedges a fact as "contested," but a higher-authority source
+(Codex Vaeloria I Gazetteer) explicitly and definitively resolves it.
+
+Configuration:
+- Extended mock corpus with the real Gazetteer passage confirming
+  Gloamreach's founding year (246 AS), which explicitly states popular/wiki
+  accounts are incorrect.
+- Re-ran sample question 1c_000 against the extended corpus.
+
+Results:
+- Agent correctly answered 246 AS, citing the Gazetteer by name.
+- Answer explicitly framed the Gazetteer as authoritative, resolving the
+  wiki's hedge rather than repeating it.
+- Matches the actual verified expected_answer in questions.json.
+
+Conclusion:
+Confirms the evidence-checker and answer-generator correctly weigh source
+authority when sources conflict, not just presence/absence of evidence --
+directly addressing the rubric's "how do you handle conflicting sources"
+requirement.

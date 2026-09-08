@@ -52,14 +52,16 @@ def answer_question(
     accumulated_evidence: list[dict] = []
     previous_queries: list[str] = []
 
-    query = plan_initial_query(question)
+    query = plan_initial_query(cleaned_question)
+    if not query.strip():
+        query = cleaned_question
 
     for round_num in range(1, effective_max_rounds + 1):
         previous_queries.append(query)
         results = search(query, top_k=effective_top_k)
         accumulated_evidence = _dedupe(accumulated_evidence + results)
 
-        check = check_sufficiency(question, accumulated_evidence)
+        check = check_sufficiency(cleaned_question, accumulated_evidence)
         status = check["status"]
 
         search_steps.append({
@@ -73,9 +75,18 @@ def answer_question(
         if status == "sufficient" or round_num == effective_max_rounds:
             break
 
-        query = rewrite_query(question, check["missing_information"], previous_queries)
+        # Stop condition: if 2 consecutive rounds yielded 0 total evidence, stop to prevent query drift
+        if round_num >= 2 and len(accumulated_evidence) == 0:
+            break
 
-    answer_text = generate_answer(question, accumulated_evidence)
+        next_query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
+        if not next_query.strip() or next_query.strip().lower() in [q.strip().lower() for q in previous_queries]:
+            # Stop condition: rewriter cannot formulate a new distinct query
+            break
+
+        query = next_query
+
+    answer_text = generate_answer(cleaned_question, accumulated_evidence)
 
     sources = [
         {"source": e["source"], "page": e.get("page"), "category": e.get("category")}
