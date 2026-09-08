@@ -243,6 +243,8 @@ data/corpus/
 # Vector database / generated indexes
 vector_store/
 chroma_db/
+data/vector_db/
+data/test_chroma/
 faiss_index/
 
 # Temporary files
