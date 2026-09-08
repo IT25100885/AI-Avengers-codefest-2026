@@ -21,10 +21,8 @@ import os
 from src.agent.planner import plan_initial_query
 from src.agent.evidence_checker import check_sufficiency
 from src.agent.query_rewriter import rewrite_query
-try:
-    from src.retrieval.search import search
-except Exception:
-    from src.retrieval.mock_search import search
+from src.generation.answer_generator import generate_answer
+from src.retrieval.search import search
 
 MAX_ROUNDS = int(os.getenv("MAX_SEARCH_ROUNDS", 3))
 TOP_K = int(os.getenv("SEARCH_TOP_K", 15))
