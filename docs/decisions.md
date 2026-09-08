@@ -79,3 +79,16 @@ Track 1C judges evaluate how the system visibly reasons across rounds, detects m
 
 Status:
 Accepted
+
+## Decision 005: Source authority hierarchy and cross-document pointer resolution
+
+Date: 2026-09-08
+
+Decision:
+Treat source categories with explicit hierarchical authority: Canonical reference works (Codex, Gazetteer) strictly override summary documents (Wiki) and informal materials (Ephemera, ballads, tavern rumors). When a lower-authority source hedges ("contested", "consult the Codex"), treat this as an explicit corpus pointer indicating the true fact exists in higher-authority documentation.
+
+Reason:
+Empirical analysis of the Ashen Era Archive reveals a deliberate design pattern: wiki articles frequently hedge controversial facts (e.g. Gloamreach founding date, Gauntlet forging date) and explicitly direct the reader to the Codex. If an agent treats all sources equally or stops at the wiki's hedge, it fails to answer answerable questions. Prioritizing Codex documents and ensuring they are thoroughly indexed in ChromaDB is required for full-archive retrieval accuracy.
+
+Status:
+Accepted
