@@ -55,3 +55,40 @@ with round 1 marked insufficient and round 2 marked sufficient.
 
 Status:
 Accepted
+
+## Decision 004: Streamlit UI architecture, dual-backend toggle, and search step transparency
+
+Date: 2026-09-07 (Updated: 2026-09-08)
+
+Decision:
+Build an interactive Streamlit UI (`src/app.py`) incorporating:
+1. Visual multi-round execution cards displaying round number, reformulated query, retrieved source count, and sufficiency status badges (`Sufficient` / `Insufficient`).
+2. A dual-backend architecture with a sidebar selector:
+   - "Simulation Mode (Offline / Competition Demo)": Guarantees instant, deterministic multi-round responses for official benchmark questions without external API keys or network latency.
+   - "Live Agent Pipeline": Directly connects to Member 2's `src.agent.search_agent.answer_question` for real-time model inference.
+3. Strict operational boundaries:
+   - No automatic fallback: If the live agent fails (e.g. missing API keys or rate limits), the error is displayed transparently rather than silently falling back to mock data.
+   - Strict simulation scope: Arbitrary questions entered in simulation mode return an explicit refusal ("No simulation available for this question") rather than invented lore or fake traces.
+   - Explicit labeling: Every simulated answer visibly declares it is a pre-recorded benchmark demonstration, including in session history.
+4. Parameter coordination: Sidebar sliders for Max Search Rounds and Top-K retrieval are dynamically passed to `answer_question(question, max_rounds, top_k)` in live mode, and disabled in simulation mode.
+5. Evidence field preservation: `missing_info` in search steps and `category` in source citations are preserved across both backends.
+6. Ground-truth benchmark alignment: Benchmark answers are strictly aligned with `src/evaluation/questions.json` (Gloamreach: 246 AS via Codex Vaeloria I, Gauntlet: 391 AS via Codex Vaeloria II).
+
+Reason:
+Track 1C judges evaluate how the system visibly reasons across rounds, detects missing information, and searches again. The visual timeline clearly demonstrates the difference between basic 1-shot RAG and Track 1C iterative search. Eliminating silent fallbacks and preventing simulation hallucination guarantees evaluation integrity during judging.
+
+Status:
+Accepted
+
+## Decision 005: Source authority hierarchy and cross-document pointer resolution
+
+Date: 2026-09-08
+
+Decision:
+Treat source categories with explicit hierarchical authority: Canonical reference works (Codex, Gazetteer) strictly override summary documents (Wiki) and informal materials (Ephemera, ballads, tavern rumors). When a lower-authority source hedges ("contested", "consult the Codex"), treat this as an explicit corpus pointer indicating the true fact exists in higher-authority documentation.
+
+Reason:
+Empirical analysis of the Ashen Era Archive reveals a deliberate design pattern: wiki articles frequently hedge controversial facts (e.g. Gloamreach founding date, Gauntlet forging date) and explicitly direct the reader to the Codex. If an agent treats all sources equally or stops at the wiki's hedge, it fails to answer answerable questions. Prioritizing Codex documents and ensuring they are thoroughly indexed in ChromaDB is required for full-archive retrieval accuracy.
+
+Status:
+Accepted
