@@ -9,9 +9,9 @@
 ## Team AI Usage
 
 ### Member 1 — Ifaza
-- **Role:** Document Processing & Retrieval
-- **AI tools used:** [CONFIRM WITH IFAZA]
-- **Used for:** Assistance with implementation, debugging, document ingestion, and retrieval pipeline development.
+- Role: Document Processing & Retrieval
+- AI tools used: ChatGPT (OpenAI), Claude (Anthropic), Cursor
+- Used for: Assistance with document ingestion, chunking, metadata handling, embeddings, ChromaDB retrieval, debugging, testing, and retrieval pipeline development.
 
 ### Member 2 — Abdullah
 - **Role:** AI & Reasoning Agent
