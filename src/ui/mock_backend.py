@@ -1,17 +1,17 @@
 """
 Mock backend module for Track 1C Streamlit UI.
 
-Provides realistic multi-round search responses matching the exact data contract
-agreed between Member 2 and Member 3:
+Provides deterministic multi-round search responses matching the exact data contract
+agreed between Member 2 and Member 3 for pre-configured competition benchmark questions:
 
 {
   "answer": "...",
   "search_steps": [
-    {"round": 1, "query": "...", "sources_found": 8, "status": "insufficient"},
-    {"round": 2, "query": "...", "sources_found": 5, "status": "sufficient"}
+    {"round": 1, "query": "...", "sources_found": 8, "status": "insufficient", "missing_info": "..."},
+    {"round": 2, "query": "...", "sources_found": 5, "status": "sufficient", "missing_info": "..."}
   ],
   "sources": [
-    {"source": "codex.pdf", "page": 17}
+    {"source": "codex.pdf", "page": 17, "category": "codex"}
   ]
 }
 """
@@ -19,10 +19,14 @@ agreed between Member 2 and Member 3:
 from typing import Dict, Any, List
 import re
 
+SIMULATION_BANNER = "[DEMONSTRATION / SIMULATION MODE: Pre-computed benchmark trace]\n\n"
+
 MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
+    # 1. Multi-Hop Investigation (1b_005: Which war was won...)
     "isolde_war": {
-        "pattern": r"(isolde|mournvale|silent choir|war.*won)",
+        "pattern": r"(which war|war.*won|war.*drowned|war.*silent choir)",
         "answer": (
+            SIMULATION_BANNER +
             "The organization that counted Isolde Mournvale among its members was "
             "**The Silent Choir** (see *isolde_mournvale.md*).\n\n"
             "According to the entry on the conflict, **the War of Drowned Light** is "
@@ -54,89 +58,12 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
             {"source": "the_annals_of_the_ashen_era.docx", "page": 1, "category": "codex"},
         ],
     },
-    "gloamreach": {
-        "pattern": r"(gloamreach|precise year|founding of gloamreach)",
-        "answer": (
-            "The sources do not provide a single, definitive year for the founding of Gloamreach. "
-            "Both wiki entries explicitly state that the foundation year is **contested** and that no "
-            "accepted year exists (*“Founded: Contested; consult the Annals and Codex”*), and the Annals "
-            "and Codex themselves contain no entry giving a founding date for the location (the registries list "
-            "individuals associated with Gloamreach, but no founding year for the settlement itself).\n\n"
-            "**Answer:** A precise year in the Age of Shadows for the true founding of Gloamreach "
-            "**cannot be stated** from the available evidence, as the archive explicitly treats the date as disputed.\n\n"
-            "*Evidence Trail:* The assistant searched 3 rounds (starting with Gloamreach overview, then attempting specific "
-            "date queries). Rather than hallucinating a year, it honestly reported the historical conflict."
-        ),
-        "search_steps": [
-            {
-                "round": 1,
-                "query": "Gloamreach",
-                "sources_found": 4,
-                "status": "insufficient",
-                "missing_info": "Settlement overview found, but founding date is marked as 'Contested; consult the Annals'.",
-            },
-            {
-                "round": 2,
-                "query": "Gloamreach founding year Age of Shadows precise date",
-                "sources_found": 9,
-                "status": "insufficient",
-                "missing_info": "Codex records individuals stationed at Gloamreach, but no settlement founding year exists.",
-            },
-            {
-                "round": 3,
-                "query": "Gloamreach established Year of the Black Dawn Age of Shadows record",
-                "sources_found": 9,
-                "status": "insufficient",
-                "missing_info": "Max rounds reached. Date is genuinely contested across authoritative archives.",
-            },
-        ],
-        "sources": [
-            {"source": "gloamreach.md", "page": 1, "category": "wiki"},
-            {"source": "the_annals_of_the_ashen_era.docx", "page": 1, "category": "codex"},
-            {"source": "petition_concerning_gloamreach.txt", "page": 1, "category": "ephemera"},
-        ],
-    },
-    "gauntlet": {
-        "pattern": r"(gauntlet|sorrowfell)",
-        "answer": (
-            "The archive contains no record of an item called the **“Gauntlet of Sorrowfell,”** "
-            "nor any date for its forging. None of the wiki entries, codex armories, or ephemera "
-            "in the current archive index mention this artifact.\n\n"
-            "**Answer:** The forging year cannot be determined because the Gauntlet of Sorrowfell "
-            "is unrecorded in the available archive materials.\n\n"
-            "*Evidence Trail:* The assistant performed 3 rounds of targeted searches across multiple keyword variations. "
-            "Having found no positive match, it accurately reported the absence of evidence."
-        ),
-        "search_steps": [
-            {
-                "round": 1,
-                "query": "Gauntlet of Sorrowfell",
-                "sources_found": 0,
-                "status": "insufficient",
-                "missing_info": "No direct matches for the artifact name.",
-            },
-            {
-                "round": 2,
-                "query": "Gauntlet of Sorrowfell forged year",
-                "sources_found": 0,
-                "status": "insufficient",
-                "missing_info": "No relics or armory records matching Sorrowfell forging.",
-            },
-            {
-                "round": 3,
-                "query": "Gauntlet of Sorrowfell forging date",
-                "sources_found": 0,
-                "status": "insufficient",
-                "missing_info": "No supporting evidence found after 3 rounds.",
-            },
-        ],
-        "sources": [
-            {"source": "the_annals_of_the_ashen_era.docx", "page": 1, "category": "codex"},
-        ],
-    },
+
+    # 2. Direct Lookup (Which organization includes Isolde Mournvale as a member?)
     "direct_membership": {
-        "pattern": r"(which organization includes isolde|isolde.*member)",
+        "pattern": r"(which organization|organization.*includes.*isolde|isolde.*member of)",
         "answer": (
+            SIMULATION_BANNER +
             "Isolde Mournvale is recorded as a member of **The Silent Choir** (*isolde_mournvale.md*).\n\n"
             "**Answer:** The Silent Choir.\n\n"
             "*Evidence Trail:* This direct single-hop question was satisfied immediately in Round 1."
@@ -155,9 +82,82 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
             {"source": "the_annals_of_the_ashen_era.docx", "page": 1, "category": "codex"},
         ],
     },
+
+    # 3. Gloamreach Founding Year (1c_000: Corrected ground truth 246 AS)
+    "gloamreach": {
+        "pattern": r"(gloamreach|founding of gloamreach|founding year.*gloamreach)",
+        "answer": (
+            SIMULATION_BANNER +
+            "According to **Codex Vaeloria I: Gazetteer of the Sundered Realms** (page 23), "
+            "the true founding of Gloamreach occurred in **246 AS** during the Age of Shadows.\n\n"
+            "While popular accounts and general wiki entries note the foundation year as contested, "
+            "the primary codex explicitly rejects contrary popular accounts and establishes **246 AS** "
+            "as the authoritative founding date.\n\n"
+            "**Answer:** 246 AS.\n\n"
+            "*Evidence Trail:* In Round 1, initial wiki retrieval flagged the founding year as disputed and directed "
+            "consultation of the authoritative codex. In Round 2, the assistant targeted Codex Vaeloria I and retrieved "
+            "the definitive resolution."
+        ),
+        "search_steps": [
+            {
+                "round": 1,
+                "query": "Gloamreach",
+                "sources_found": 4,
+                "status": "insufficient",
+                "missing_info": "Settlement overview found, but founding date is marked contested; directs consultation of Codex Vaeloria I.",
+            },
+            {
+                "round": 2,
+                "query": "Codex Vaeloria Gloamreach founding year Age of Shadows",
+                "sources_found": 3,
+                "status": "sufficient",
+                "missing_info": "",
+            },
+        ],
+        "sources": [
+            {"source": "codex/codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf", "page": 23, "category": "codex"},
+            {"source": "gloamreach.md", "page": 1, "category": "wiki"},
+        ],
+    },
+
+    # 4. Gauntlet of Sorrowfell Forging Year (1c_003: Corrected ground truth 391 AS)
+    "gauntlet": {
+        "pattern": r"(gauntlet|sorrowfell)",
+        "answer": (
+            SIMULATION_BANNER +
+            "The **Gauntlet of Sorrowfell** was forged in **391 AS**.\n\n"
+            "Authoritative records in **Codex Vaeloria II: Armory of Relics and Bestiary** (page 11) "
+            "confirm this date in the Gauntlet of Sorrowfell entry and explicitly reject competing dates.\n\n"
+            "**Answer:** 391 AS.\n\n"
+            "*Evidence Trail:* In Round 1, general armory search was insufficient for exact forging year. "
+            "In Round 2, the assistant searched Codex Vaeloria II and retrieved the verified year 391 AS."
+        ),
+        "search_steps": [
+            {
+                "round": 1,
+                "query": "Gauntlet of Sorrowfell",
+                "sources_found": 1,
+                "status": "insufficient",
+                "missing_info": "Artifact identified, but verified forging date requires consultation of Codex Vaeloria II armory.",
+            },
+            {
+                "round": 2,
+                "query": "Codex Vaeloria II Gauntlet of Sorrowfell forged year",
+                "sources_found": 2,
+                "status": "sufficient",
+                "missing_info": "",
+            },
+        ],
+        "sources": [
+            {"source": "codex/codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf", "page": 11, "category": "codex"},
+        ],
+    },
+
+    # 5. Robustness / Nonsense Input (internal_nonsense_001)
     "nonsense": {
         "pattern": r"(asdfgh|qwerty|zxcvbn)",
         "answer": (
+            SIMULATION_BANNER +
             "The input cannot be interpreted as a meaningful query regarding the Ashen Era Archive. "
             "No historical entities, artifacts, or events could be extracted. "
             "Please provide a coherent question regarding the archive."
@@ -168,7 +168,7 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
                 "query": "asdfgh qwerty zxcvbn",
                 "sources_found": 0,
                 "status": "insufficient",
-                "missing_info": "Input does not map to any recognized historical term.",
+                "missing_info": "Input does not map to any recognized historical term in the archive.",
             },
         ],
         "sources": [],
@@ -178,17 +178,9 @@ MOCK_DATABASE: Dict[str, Dict[str, Any]] = {
 
 def mock_answer_question(question: str) -> Dict[str, Any]:
     """
-    Produce a deterministic mock answer matching the team's agreed schema:
-    {
-      "answer": "...",
-      "search_steps": [
-        {"round": 1, "query": "...", "sources_found": 8, "status": "insufficient"},
-        {"round": 2, "query": "...", "sources_found": 5, "status": "sufficient"}
-      ],
-      "sources": [
-        {"source": "codex.pdf", "page": 17}
-      ]
-    }
+    Produce a deterministic mock answer matching the team's agreed schema.
+    For unsupported questions, explicitly returns an unsupported notice instead
+    of inventing answers or fake search traces.
     """
     q_clean = question.strip().lower()
 
@@ -197,14 +189,19 @@ def mock_answer_question(question: str) -> Dict[str, Any]:
             "answer": "No question was provided. Please enter an inquiry to search the archive.",
             "search_steps": [],
             "sources": [],
+            "is_unsupported": False,
         }
 
-    # Match known scenario
+    # Match known benchmark scenarios
     for scenario_key, scenario in MOCK_DATABASE.items():
         if re.search(scenario["pattern"], q_clean):
-            # Format clean sources for the contract
+            # Preserve evidence-display fields: missing_info and category
             clean_sources = [
-                {"source": s["source"], "page": s.get("page")}
+                {
+                    "source": s["source"],
+                    "page": s.get("page"),
+                    "category": s.get("category", "archive"),
+                }
                 for s in scenario["sources"]
             ]
             clean_steps = [
@@ -213,6 +210,7 @@ def mock_answer_question(question: str) -> Dict[str, Any]:
                     "query": s["query"],
                     "sources_found": s["sources_found"],
                     "status": s["status"],
+                    "missing_info": s.get("missing_info", ""),
                 }
                 for s in scenario["search_steps"]
             ]
@@ -220,36 +218,17 @@ def mock_answer_question(question: str) -> Dict[str, Any]:
                 "answer": scenario["answer"],
                 "search_steps": clean_steps,
                 "sources": clean_sources,
+                "is_unsupported": False,
             }
 
-    # Generic fallback for freeform queries
-    first_query = question.strip().split("?")[0]
-    words = [w for w in first_query.split() if len(w) > 3]
-    entity = " ".join(words[:2]) if words else "Archive Subject"
-
+    # If question is not in pre-configured simulation benchmark, refuse cleanly:
     return {
         "answer": (
-            f"Based on analysis of the Ashen Era Archive, the evidence regarding **{question.strip()}** "
-            "was synthesized across multiple documents. Key historical records confirm the primary relationship "
-            "established during the Age of Shadows.\n\n"
-            f"**Synthesized Answer:** Evidence points to recorded accounts in the regional codex and chronicles."
+            "No simulation available for this question. Simulation mode only supports pre-configured "
+            "benchmark questions. To search the archive for arbitrary questions, please switch to "
+            "Live Agent Pipeline in the sidebar."
         ),
-        "search_steps": [
-            {
-                "round": 1,
-                "query": entity,
-                "sources_found": 3,
-                "status": "insufficient",
-            },
-            {
-                "round": 2,
-                "query": f"{entity} historical record Ashen Era",
-                "sources_found": 5,
-                "status": "sufficient",
-            },
-        ],
-        "sources": [
-            {"source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf", "page": 14},
-            {"source": "the_annals_of_the_ashen_era.docx", "page": 1},
-        ],
+        "search_steps": [],
+        "sources": [],
+        "is_unsupported": True,
     }

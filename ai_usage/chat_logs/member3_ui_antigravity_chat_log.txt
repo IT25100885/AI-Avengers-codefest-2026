@@ -1,0 +1,115 @@
+AI USAGE LOG — Antigravity (Google DeepMind)
+Team: AI-Avengers | Member 3 — Streamlit UI & Application Integration Engineer (Sameeha)
+Track: SLIIT Codefest 2026 — Sub-track 1C: Searching the Way a Human Does
+Session dates: 2026-09-07 to 2026-09-08
+Tool: Antigravity (Google DeepMind coding agent)
+================================================================================
+
+1. OVERVIEW & RESPONSIBILITIES
+--------------------------------------------------------------------------------
+Member 3 is responsible for:
+  - Streamlit web application architecture (src/app.py, app.py)
+  - Multi-round search visualizer displaying human-like iterative reasoning
+  - Preserving evidence sufficiency states (sufficient vs insufficient)
+  - Privacy-preserving query formulation display (avoiding raw prompt leakage)
+  - Grounded answer presentation and granular source citations with page numbers
+  - Dual-mode architecture: deterministic simulation for offline competition demo
+    and live agent pipeline integration with Member 2's reasoning loop
+  - Dynamic parameter passing (max search rounds, top-k retrieval)
+  - Error boundaries: transparent error handling without silent simulation fallbacks
+  - 3-4 minute live demo script and judge presentation materials (docs/demo_script.md)
+  - Automated unit test suite for UI integration (tests/test_ui_backend.py)
+
+================================================================================
+SECTION 1 — STREAMLIT APPLICATION SKELETON & CONTRACT INITIALIZATION
+================================================================================
+User prompt:
+  "I'm the member 3, Do my part completely!"
+
+Actions & Findings:
+  - Inspected SLIIT Codefest 2026 Sub-Track 1C Execution Guide.
+  - Identified data contract from Section 6:
+    {
+      "answer": "...",
+      "search_steps": [
+        {"round": 1, "query": "...", "sources_found": 8, "status": "insufficient"},
+        {"round": 2, "query": "...", "sources_found": 5, "status": "sufficient"}
+      ],
+      "sources": [
+        {"source": "codex.pdf", "page": 17}
+      ]
+    }
+  - Installed streamlit, openai, and tenacity.
+  - Added streamlit>=1.30.0 to requirements.txt.
+  - Implemented src/ui/mock_backend.py providing high-fidelity responses for
+    parallel team development.
+  - Created src/app.py and root app.py entrypoints.
+
+================================================================================
+SECTION 2 — MULTI-ROUND VISUALIZATION & BENCHMARK PRESETS
+================================================================================
+User prompt:
+  "Build the question field, submit action, display search history, and prepare
+   the interface for a smooth 3-4 minute live demo."
+
+Implementation Details:
+  - Custom responsive layout with colored badges:
+    * ✅ Sufficient Evidence (green) when evidence chain is complete.
+    * ⚠️ Insufficient Evidence (amber) when information gaps trigger re-search.
+  - Grounded answer box with markdown rendering.
+  - Citation cards showing document name, page number, and archive category.
+  - Benchmark dropdown pre-loaded with official competition questions from
+    src/evaluation/questions.json.
+  - Raw JSON inspector expander for direct judging verification.
+  - Created docs/demo_script.md detailing a step-by-step 3-4 minute presentation.
+
+================================================================================
+SECTION 3 — BENCHMARK CORRECTIONS & GROUND TRUTH ALIGNMENT
+================================================================================
+User prompt:
+  "Correct the two benchmark answers: Gloamreach’s founding year is 246 AS, and the
+   Gauntlet of Sorrowfell’s forging year is 391 AS, according to
+   src/evaluation/questions.json. Update the mock answers, citations, preset labels,
+   demo script, and tests."
+
+Actions & Findings:
+  - Verified src/evaluation/questions.json notes:
+    * 1c_000: Gloamreach Founded = 246 AS (Codex Vaeloria I, p. 23). The wiki's
+      contested label directs consultation of authoritative records.
+    * 1c_003: Gauntlet of Sorrowfell Forged = 391 AS (Codex Vaeloria II, p. 11).
+  - Updated src/ui/mock_backend.py to execute 2-round searches resolving to these
+    exact verified years with citations to the respective codices.
+  - Updated preset labels in src/app.py.
+  - Updated docs/demo_script.md walkthrough and talking points.
+
+================================================================================
+SECTION 4 — ERROR TRANSPARENCY, SLIDERS & BOUNDARY ENFORCEMENT
+================================================================================
+User prompt:
+  "- Remove automatic fallback from live mode to simulation.
+   - Clearly label simulated results.
+   - Fix unsupported simulation questions. Return 'No simulation available for this
+     question' instead of invented answers.
+   - Fix the direct-lookup preset to return The Silent Choir without hitting war scenario.
+   - Make sliders work on every live search and coordinate with Abdullah.
+   - Clarify retrieval status.
+   - Preserve evidence-display fields (missing_info, category).
+   - Clean up README and update tests."
+
+Implementation Details:
+  - Fixed regex matching order in src/ui/mock_backend.py so direct lookup
+    ("Which organization includes Isolde Mournvale as a member?") strictly matches
+    the 1-round membership scenario without triggering the multi-hop war scenario.
+  - Updated mock_backend.py unsupported query handling: returns clean refusal
+    without inventing fake text or search steps.
+  - Labeled simulated results with prominent [DEMONSTRATION / SIMULATION MODE] banner.
+  - In src/app.py, removed silent fallback to simulation when live execution fails;
+    displays error state with user instructions.
+  - Updated src/agent/search_agent.py to accept max_rounds and top_k parameters,
+    and dynamically wire them to sidebar sliders.
+  - Preserved missing_info in search steps and category in source citations across
+    both simulation and live agent backends.
+  - Clarified retrieval status: Live mode currently pairs the Groq LLM reasoning loop
+    with structured mock retrieval while Member 1's ChromaDB index is integrated.
+  - Cleaned up duplicate sections in README.md.
+  - Expanded tests/test_ui_backend.py with 11 comprehensive automated tests.
