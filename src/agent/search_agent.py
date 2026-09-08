@@ -45,6 +45,15 @@ def answer_question(
     max_rounds: Optional[int] = None,
     top_k: Optional[int] = None,
 ) -> dict:
+    if not question or not question.strip():
+        return {
+            "answer": "No question was provided. Please enter an inquiry to search the archive.",
+            "search_steps": [],
+            "sources": [],
+        }
+
+    cleaned_question = question.strip()
+
     effective_max_rounds = max_rounds if max_rounds is not None else int(os.getenv("MAX_SEARCH_ROUNDS", 3))
     effective_top_k = top_k if top_k is not None else int(os.getenv("SEARCH_TOP_K", 15))
 
@@ -53,8 +62,6 @@ def answer_question(
     previous_queries: list[str] = []
 
     query = plan_initial_query(cleaned_question)
-    if not query.strip():
-        query = cleaned_question
 
     for round_num in range(1, effective_max_rounds + 1):
         previous_queries.append(query)
@@ -75,16 +82,7 @@ def answer_question(
         if status == "sufficient" or round_num == effective_max_rounds:
             break
 
-        # Stop condition: if 2 consecutive rounds yielded 0 total evidence, stop to prevent query drift
-        if round_num >= 2 and len(accumulated_evidence) == 0:
-            break
-
-        next_query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
-        if not next_query.strip() or next_query.strip().lower() in [q.strip().lower() for q in previous_queries]:
-            # Stop condition: rewriter cannot formulate a new distinct query
-            break
-
-        query = next_query
+        query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
 
     answer_text = generate_answer(cleaned_question, accumulated_evidence)
 

@@ -166,6 +166,9 @@ def run_live_pipeline(question: str, max_rounds: int, top_k: int) -> Dict[str, A
 
 def execute_search(question: str, mode: str, max_rounds: int, top_k: int) -> Optional[Dict[str, Any]]:
     """Execute query via selected backend with strict error boundaries and no auto-fallback."""
+    # Always clear the previous active result when starting a new search; retain history
+    st.session_state.last_result = None
+
     clean_q = question.strip()
     if not clean_q:
         st.warning("⚠️ Please enter a question or select a preset before searching.")
