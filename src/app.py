@@ -264,12 +264,9 @@ with st.sidebar:
         else:
             st.error("🔴 VOYAGE API Key: Missing (Live retrieval calls will fail)")
 
-        st.info(
-            "ℹ️ **Retrieval Status**: Live Mode is fully connected to the Groq LLM and "
-            "the persistent ChromaDB vector store (2,186 archive chunks indexed)."
         st.success(
-            "🟢 **Retrieval Status**: Live Mode uses the full Ashen Era Archive "
-            "with Voyage AI query embeddings, ChromaDB vector retrieval, and Voyage reranking."
+            "🟢 **Retrieval Status**: Live Mode is fully connected to the Groq LLM and "
+            "the persistent ChromaDB vector store (2,186 archive chunks indexed)."
         )
     else:
         st.info("ℹ️ **Simulation Mode Active**: Running verified pre-recorded benchmark traces.")
