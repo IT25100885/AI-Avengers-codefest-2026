@@ -7,3 +7,4 @@ markdown>=3.7
 voyageai>=0.5.0
 chromadb>=1.5.0
 streamlit>=1.30.0
+pytest
