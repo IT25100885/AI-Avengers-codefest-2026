@@ -9,9 +9,9 @@
 ## Team AI Usage
 
 ### Member 1 — Ifaza
-- **Role:** Document Processing & Retrieval
-- **AI tools used:** [CONFIRM WITH IFAZA]
-- **Used for:** Assistance with implementation, debugging, document ingestion, and retrieval pipeline development.
+- Role: Document Processing & Retrieval
+- AI tools used: ChatGPT (OpenAI), Claude (Anthropic), Cursor
+- Used for: Assistance with document ingestion, chunking, metadata handling, embeddings, ChromaDB retrieval, debugging, testing, and retrieval pipeline development.
 
 ### Member 2 — Abdullah
 - **Role:** AI & Reasoning Agent
@@ -71,4 +71,4 @@ AI interaction transcripts are stored in the `ai_usage/chat_logs/` folder.
 - [Antigravity AI Usage Log - Member 3](chat_logs/member3_ui_antigravity_chat_log.txt)
 - [ChatGPT AI Usage Log - Member 4](chat_logs/chatgpt_codefest_chat_log.txt)
 
-Member 1's AI usage information and relevant log will be added after confirmation.
+
