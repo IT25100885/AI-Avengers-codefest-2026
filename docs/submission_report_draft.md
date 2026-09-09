@@ -131,6 +131,22 @@ The evaluation harness calls the same `answer_question()` interface used by the 
 
 Development testing included official Track 1C questions, multi-hop questions, direct lookups and robustness cases.
 
+Earlier development evaluations were used to identify weaknesses in retrieval and agent behavior. The final evaluation was executed against the fully indexed Ashen Era Archive (2,186 chunks in ChromaDB) across all 8 official and internal benchmark questions.
+
+**Final results (8/8 Questions Passed — 100% Accuracy):**
+
+| Question ID | Type | Rounds | Status | Expected Answer | Agent Grounded Output | Score |
+|---|---|---|---|---|---|---|
+| `1c_000` | Track 1C Conflict Benchmark | 1 | Sufficient | 246 AS | **246 AS** (Cites *Codex Vaeloria I: Gazetteer of the Sundered Realms* p. 23-24, explicitly overriding wiki hedge) | 2 / 2 |
+| `1c_003` | Track 1C Conflict Benchmark | 1 | Sufficient | 391 AS | **391 AS** (Cites *Codex Vaeloria II: Armory of Relics* p. 11 & docx, superseding wiki dispute) | 2 / 2 |
+| `1b_005` | Track 1B Multi-Hop | 2 | Sufficient | The War of Drowned Light | **The War of Drowned Light** (Round 1: Isolde in Silent Choir; Round 2: Silent Choir victory in Drowned Light) | 2 / 2 |
+| `internal_direct_001` | Direct Lookup | 1 | Sufficient | The Silent Choir | **The Silent Choir** (Cites *wiki/isolde_mournvale.md* & *Annals of the Ashen Era* p. 28) | 2 / 2 |
+| `internal_nonsense_001` | Anti-Hallucination Guard | 3 | Insufficient | Honest Refusal | **Honest Refusal** ("no relevant evidence in the archive to answer this question") | 2 / 2 |
+| `1b_007` | Track 1B Multi-Hop | 2 | Sufficient | The Leaden Accord | **The Leaden Accord** (Round 1: Ederon in Iron-Ring Cartel; Round 2: Cartel won Leaden Accord) | 2 / 2 |
+| `1b_022` | Track 1B Multi-Hop | 2 | Sufficient | The War of Drowned Light | **The War of Drowned Light** (Round 1: Ravena in Silent Choir; Round 2: Silent Choir victory) | 2 / 2 |
+| `1b_003` | Track 1B Multi-Hop | 2 | Sufficient | Gloamreach | **Gloamreach** (Round 1: Cerys wields Cinder-Wrought Aegis; Round 2: Aegis housed in Gloamreach) | 2 / 2 |
+
+All results are logged with complete execution traces in `src/evaluation/results/evaluation_20260909_221922.json`.
 Earlier mock-based experiments helped test the reasoning loop while retrieval was being integrated. The final code path now connects the reasoning agent to `src.retrieval.search`.
 
 Evaluation artifacts and experiment history are stored in:

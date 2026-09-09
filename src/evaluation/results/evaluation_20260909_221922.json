@@ -1,0 +1,503 @@
+[
+  {
+    "id": "1c_000",
+    "question": "State the precise year in the Age of Shadows that marks the true founding of Gloamreach.",
+    "expected_answer": "246 AS",
+    "actual_answer": "The codex for the Sundered Realms records Gloamreach’s foundation as **246 AS** (Age of Shadows)【codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf†L1-L9】【codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf†L31-L38】.  \n\nThe wiki entry notes that the founding year is contested and that no single year is universally accepted【gloamreach.md†L31-L38】. However, the codex is an official record and gives an exact date, which is taken as the authoritative figure.  \n\n**Answer:** Gloamreach was founded in **246 AS**.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gloamreach",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "gloamreach.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf",
+        "page": 23,
+        "category": "codex"
+      },
+      {
+        "source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf",
+        "page": 24,
+        "category": "codex"
+      },
+      {
+        "source": "petition_concerning_gloamreach.txt",
+        "page": null,
+        "category": "ephemera"
+      },
+      {
+        "source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.docx",
+        "page": null,
+        "category": "codex"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1c_003",
+    "question": "In which year was the 'Gauntlet of Sorrowfell' actually forged?",
+    "expected_answer": "391 AS",
+    "actual_answer": "The authoritative armory codex records the Gauntlet of Sorrowfell as having been forged in **391 AS**:\n\n- **Codex Vaeloria II – Armory of Relics and Bestiary (docx)** lists the artifact’s entry as “Forged: 391 AS” and states that “the accepted forging date is 391 AS, and no competing date has standing in this codex.”【source: codex_vaeloria_ii_armory_of_relics_and_bestiary.docx】  \n- The same information appears in the PDF version of the codex, again giving “Forged 391 AS” and declaring that popular contrary claims are rejected【source: codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf】.\n\nThe wiki article on the Gauntlet of Sorrowfell notes that the forging date is “contested; no year is stated” and advises consulting the Annals and Codex for the definitive account【source: gauntlet_of_sorrowfell.md (wiki)】. Since the codex is the cited authoritative source for the artifact’s chronology, its specific year (391 AS) supersedes the wiki’s statement that the date is unresolved.\n\n**Answer:** The Gauntlet of Sorrowfell was forged in the year **391 AS**.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Gauntlet of Sorrowfell",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "gauntlet_of_sorrowfell.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.docx",
+        "page": null,
+        "category": "codex"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf",
+        "page": 11,
+        "category": "codex"
+      },
+      {
+        "source": "quartermaster_ledger_concerning_crookvale.txt",
+        "page": null,
+        "category": "ephemera"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1b_005",
+    "question": "Which war was won by the organization that included Isolde Mournvale as one of its members?",
+    "expected_answer": "The War of Drowned Light",
+    "actual_answer": "The organization that Isolde Mournvale belongs to is **The Silent Choir**.  \nAccording to the war register in *The Annals of the Ashen Era* (codex), The Silent Choir “was victor of **The War of Drowned Light**”【the_annals_of_the_ashen_era.pdf, category: codex】.  \n\nTherefore, the war won by the organization that includes Isolde Mournvale is **the War of Drowned Light**.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Isolde Mournvale",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The evidence does not specify any war that was won by The Silent Choir, the organization of which Isolde Mournvale is a member. Information about a war victory attributed to The Silent Choir is needed to answer the question."
+      },
+      {
+        "round": 2,
+        "query": "The Silent Choir war victory",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "isolde_mournvale.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 28,
+        "category": "codex"
+      },
+      {
+        "source": "auction_catalogue_concerning_isolde_mournvale.docx",
+        "page": null,
+        "category": "ephemera"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": null,
+        "category": "codex"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 68,
+        "category": "codex"
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_silent_choir.md",
+        "page": null,
+        "category": "wiki"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "internal_direct_001",
+    "question": "Which organization includes Isolde Mournvale as a member?",
+    "expected_answer": "The Silent Choir",
+    "actual_answer": "Isolde Mournvale is recorded as a member of **The Silent Choir**【isolde_mournvale.md (wiki)†L1-L4】【the_annals_of_the_ashen_era.pdf (codex)†L7-L10】.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Isolde Mournvale",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "isolde_mournvale.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 28,
+        "category": "codex"
+      },
+      {
+        "source": "auction_catalogue_concerning_isolde_mournvale.docx",
+        "page": null,
+        "category": "ephemera"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": null,
+        "category": "codex"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "internal_nonsense_001",
+    "question": "asdfgh qwerty zxcvbn ???",
+    "expected_answer": null,
+    "actual_answer": "I’m sorry, but none of the provided sources contain any information that relates to the phrase “asdfgh qwerty zxcvbn ???.” There is no relevant evidence in the archive to answer this question.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "asdfgh qwerty zxcvbn",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The question is nonsensical (\"asdfgh qwerty zxcvbn ???\") and does not specify any concrete information to retrieve; a clear factual query is needed."
+      },
+      {
+        "round": 2,
+        "query": "meaning of asdfgh qwerty zxcvbn",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The question is nonsensical ('asdfgh qwerty zxcvbn ???') and no evidence provides any relevant facts to answer it; the specific information being asked for is undefined."
+      },
+      {
+        "round": 3,
+        "query": "asdfgh qwerty zxcvbn keyboard pattern origin",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The question 'asdfgh qwerty zxcvbn ???' does not specify any concrete information to be answered, so no relevant fact can be extracted from the evidence."
+      }
+    ],
+    "sources": [
+      {
+        "source": "vharenford.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_ashen_chronicles_volume_iii_a_crown_of_cinders.docx",
+        "page": null,
+        "category": "chronicles"
+      },
+      {
+        "source": "README.txt",
+        "page": null,
+        "category": "root"
+      },
+      {
+        "source": "the_ashen_chronicles_volume_ii_the_long_reprisal.pdf",
+        "page": 183,
+        "category": "chronicles"
+      },
+      {
+        "source": "the_ashen_chronicles_volume_ii_the_long_reprisal.pdf",
+        "page": 80,
+        "category": "chronicles"
+      },
+      {
+        "source": "muster_roll_concerning_the_thrice_bound_lantern.pdf",
+        "page": 2,
+        "category": "ephemera"
+      },
+      {
+        "source": "the_ashen_chronicles_volume_i_the_kindling_years.pdf",
+        "page": 99,
+        "category": "chronicles"
+      },
+      {
+        "source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf",
+        "page": 39,
+        "category": "codex"
+      },
+      {
+        "source": "codex_vaeloria_i_gazetteer_of_the_sundered_realms.pdf",
+        "page": 17,
+        "category": "codex"
+      },
+      {
+        "source": "edge_of_gloamreach.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf",
+        "page": 34,
+        "category": "codex"
+      },
+      {
+        "source": "the_ashen_chronicles_volume_iii_a_crown_of_cinders.pdf",
+        "page": 133,
+        "category": "chronicles"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf",
+        "page": 9,
+        "category": "codex"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf",
+        "page": 32,
+        "category": "codex"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1b_007",
+    "question": "Which accord was ultimately won by the faction of which Ederon Fellgard is a member?",
+    "expected_answer": "The Leaden Accord",
+    "actual_answer": "Ederon Fellgard is a member of **The Iron‑Ring Cartel**.  \nThe Iron‑Ring Cartel is recorded as the victor of **The Leaden Accord**【the_iron_ring_cartel.md†L9-L13】【the_annals_of_the_ashen_era.docx†L1-L7】.  \n\nThus, the accord ultimately won by the faction to which Ederon Fellgard belongs is **the Leaden Accord**.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Ederon Fellgard",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The evidence does not mention any accord (its name, context, or outcome) that was ultimately won by the Iron-Ring Cartel, the faction to which Ederon Fellgard belongs."
+      },
+      {
+        "round": 2,
+        "query": "Iron‑Ring Cartel won accord",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "ederon_fellgard.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 16,
+        "category": "codex"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": null,
+        "category": "codex"
+      },
+      {
+        "source": "ederon_coldwater.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_iron_ring_cartel.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 62,
+        "category": "codex"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1b_022",
+    "question": "Which war did Ravena Stormwell's own faction ultimately win?",
+    "expected_answer": "The War of Drowned Light",
+    "actual_answer": "Ravena Stormwell belongs to **The Silent Choir**.  According to the codex entry “the_annals_of_the_ashen_era.docx,” the Silent Choir is recorded as the **victor of the War of Drowned Light** (the entry lists “The Silent Choir … victor of The War of Drowned Light”).  No other war is shown as a victory for the Silent Choir in the provided evidence.  \n\n**Answer:** The Silent Choir – Ravena Stormwell’s faction – ultimately won **the War of Drowned Light**.  \n\n*Source: the_annals_of_the_ashen_era.docx (Silent Choir classification, “The Silent Choir … victor of The War of Drowned Light”).*",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Ravena Stormwell",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The evidence does not mention any war involving Ravena Stormwell's faction, nor does it state which war that faction ultimately won. Details about the conflict and its outcome are required."
+      },
+      {
+        "round": 2,
+        "query": "Ravena Stormwell war victory faction",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "ravena_stormwell.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 49,
+        "category": "codex"
+      },
+      {
+        "source": "ravena_harrowick.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": null,
+        "category": "codex"
+      },
+      {
+        "source": "the_ashen_vanguard.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_war_of_drowned_light.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_winter_reckoning.md",
+        "page": null,
+        "category": "wiki"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  },
+  {
+    "id": "1b_003",
+    "question": "To which shadowed redoubt must one journey to examine the relic long borne by Cerys Sablewood the Ashen since 356 AS?",
+    "expected_answer": "Gloamreach",
+    "actual_answer": "The relic that Cerys Sablewood the Ashen has borne since 356 AS – the **Cinder‑Wrought Aegis** – is recorded as being **housed in Gloamreach**. Therefore, to examine that relic one must travel to the shadowed redoubt of **Gloamreach**【the_cinder_wrought_aegis.md†L9-L13】【codex_vaeloria_ii_armory_of_relics_and_bestiary.docx†L1-L8】.",
+    "search_steps": [
+      {
+        "round": 1,
+        "query": "Cerys Sablewood the Ashen",
+        "sources_found": 5,
+        "status": "insufficient",
+        "missing_info": "The specific shadowed redoubt (location) where the relic (The Cinder-Wrought Aegis) that Cerys Sablewood the Ashen has wielded since 356 AS is kept or examined is not provided in the evidence."
+      },
+      {
+        "round": 2,
+        "query": "Cinder-Wrought Aegis shadowed redoubt location",
+        "sources_found": 5,
+        "status": "sufficient",
+        "missing_info": ""
+      }
+    ],
+    "sources": [
+      {
+        "source": "cerys_sablewood_the_ashen.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.pdf",
+        "page": 11,
+        "category": "codex"
+      },
+      {
+        "source": "field_report_concerning_cerys_sablewood_the_ashen.docx",
+        "page": null,
+        "category": "ephemera"
+      },
+      {
+        "source": "the_annals_of_the_ashen_era.docx",
+        "page": null,
+        "category": "codex"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.docx",
+        "page": null,
+        "category": "codex"
+      },
+      {
+        "source": "the_cinder_wrought_aegis.md",
+        "page": null,
+        "category": "wiki"
+      },
+      {
+        "source": "codex_vaeloria_ii_armory_of_relics_and_bestiary.pdf",
+        "page": 23,
+        "category": "codex"
+      },
+      {
+        "source": "field_report_concerning_vharencrag_fortress.docx",
+        "page": null,
+        "category": "ephemera"
+      }
+    ],
+    "retrieval_score": null,
+    "answer_score": null,
+    "citation_score": null,
+    "search_round_score": null,
+    "failure_reason": null,
+    "reviewer_notes": ""
+  }
+]
