@@ -23,7 +23,11 @@ the LLM. This means:
   - Running the full suite consumes real Groq API calls.
 """
 
+import os
 import unittest
+
+# Ensure unit tests run deterministically against the mock corpus
+os.environ["USE_MOCK_SEARCH"] = "1"
 
 from src.agent.search_agent import answer_question
 

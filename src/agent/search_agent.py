@@ -39,9 +39,11 @@ from src.agent.evidence_checker import check_sufficiency
 from src.agent.query_rewriter import rewrite_query
 from src.generation.answer_generator import generate_answer
 
-# REAL retrieval pipeline:
-# Voyage query embedding -> ChromaDB -> Voyage reranking
-from src.retrieval.search import search
+# Retrieval backend: Real ChromaDB/Voyage search by default, or mock_search when USE_MOCK_SEARCH=1
+if os.getenv("USE_MOCK_SEARCH") == "1":
+    from src.retrieval.mock_search import search
+else:
+    from src.retrieval.search import search
 
 
 MAX_ROUNDS = int(os.getenv("MAX_SEARCH_ROUNDS", 3))
@@ -122,9 +124,13 @@ def answer_question(
     # ---------------------------------------------------------
     for round_num in range(1, effective_max_rounds + 1):
 
+        # Guard: Stop if query rewriter repeats an identical query
+        if query in previous_queries:
+            break
+
         previous_queries.append(query)
 
-        # Search REAL indexed Ashen Era Archive
+        # Search Ashen Era Archive
         results = search(
             query,
             top_k=effective_top_k,
@@ -134,6 +140,19 @@ def answer_question(
         accumulated_evidence = _dedupe(
             accumulated_evidence + results
         )
+
+        # Guard: Stop early if 2 consecutive rounds return zero evidence to prevent drift
+        if len(accumulated_evidence) == 0 and round_num >= 2:
+            search_steps.append(
+                {
+                    "round": round_num,
+                    "query": query,
+                    "sources_found": len(results),
+                    "status": "insufficient",
+                    "missing_info": "No relevant evidence found in archive.",
+                }
+            )
+            break
 
         # Determine whether enough evidence has been collected
         check = check_sufficiency(
