@@ -33,7 +33,7 @@ Respond with ONLY a JSON object in this exact shape:
 """
 
 
-def check_sufficiency(question: str, evidence: list[dict]) -> dict:
+def check_sufficiency(question: str, evidence: list[dict], model: str | None = None) -> dict:
     evidence_text = "\n\n".join(
         f"[{i+1}] (source: {e['source']}, category: {e.get('category', 'unknown')})\n{e['text']}"
         for i, e in enumerate(evidence)
@@ -42,7 +42,7 @@ def check_sufficiency(question: str, evidence: list[dict]) -> dict:
         {"role": "system", "content": SUFFICIENCY_SYSTEM_PROMPT},
         {"role": "user", "content": f"QUESTION: {question}\n\nEVIDENCE:\n{evidence_text}"},
     ]
-    result = call_llm_json(messages, temperature=0.0)
+    result = call_llm_json(messages, model=model, temperature=0.0)
 
     # Defensive defaults in case the model returns non-dict or omits a key
     if not isinstance(result, dict):

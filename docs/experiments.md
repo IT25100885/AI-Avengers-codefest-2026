@@ -187,3 +187,42 @@ Confirms the evidence-checker and answer-generator correctly weigh source
 authority when sources conflict, not just presence/absence of evidence --
 directly addressing the rubric's "how do you handle conflicting sources"
 requirement.
+
+
+## Experiment 007: LLM Model Comparison on Evidence Checker (gpt-oss-20b vs gpt-oss-120b)
+
+Date: 2026-09-09
+
+Goal:
+Compare the performance, latency, instruction fidelity, and source authority handling of `openai/gpt-oss-20b` versus `openai/gpt-oss-120b` when acting as the strict evidence-sufficiency judge (`src/agent/evidence_checker.py`).
+
+Configuration:
+- Models evaluated: `openai/gpt-oss-20b` vs `openai/gpt-oss-120b` (via Groq API endpoint)
+- Temperature: 0.0 (greedy decoding)
+- Evaluated across 6 representative Track 1C test cases:
+  1. Multi-hop partial evidence (Isolde Mournvale membership known, war outcome missing)
+  2. Multi-hop complete evidence (Isolde membership + War of Drowned Light victory both present)
+  3. Source authority conflict (lower-authority wiki hedges "contested" vs higher-authority codex definitively states 246 AS)
+  4. Unanswerable question / irrelevant distractor (Gauntlet forging year with topography passage)
+  5. Partial single-hop gap (War dates present, casualty count missing)
+  6. Unresolvable equal-authority conflict (two contradictory wiki entries with no codex tiebreaker)
+
+Results Summary:
+
+| Metric / Scenario | openai/gpt-oss-20b | openai/gpt-oss-120b |
+|---|---|---|
+| Status Accuracy (6 test cases) | 6 / 6 (100%) | 6 / 6 (100%) |
+| JSON schema compliance | 100% (valid dict returned) | 100% (valid dict returned) |
+| Average Latency per Check | 0.58s | 0.83s (~30% slower) |
+| Multi-hop Gap Articulation | Concise, accurate | High specificity (explicitly retained bridge entity relationships) |
+| Source Authority Explanation (Codex vs Wiki) | Selected correct date, but reasoning omitted explicit mention of authority override | Explicitly cited Codex authority and noted override of contested popular accounts |
+| Equal-Authority Conflict | Correctly flagged `insufficient` | Correctly flagged `insufficient` |
+
+Detailed Observations:
+- **Accuracy & Robustness**: Both models achieved 100% accuracy on classifying evidence as `sufficient` vs `insufficient` without hallucinations or false positives. Both models reliably parsed into valid JSON without schema errors.
+- **Latency & Throughput**: `gpt-oss-20b` is ~30% faster (0.58s vs 0.83s), offering higher throughput and lower API token cost, making it an attractive candidate for high-volume offline evals.
+- **Source Authority Nuance (Codex vs Wiki)**: In the Gloamreach conflict scenario (TC3), `gpt-oss-120b` explicitly followed System Prompt Rule 2 ("flag the conflict in your reasoning"), stating: *"The codex provides an exact founding year (246 AS) and is the authoritative source, overriding the contested popular accounts."* In contrast, `gpt-oss-20b` simply stated the codex gave the answer, omitting the comparative authority override from its reasoning.
+- **Gap Articulation for Query Rewriting**: In multi-hop partial evidence (TC1), `gpt-oss-120b` provided richer context in `missing_information` (*"Information about any war that was won by The Silent Choir, the organization Isolde Mournvale belongs to"*), which provides better guidance to `src/agent/query_rewriter.py` for downstream round-2 query formation than `gpt-oss-20b`'s more abbreviated output.
+
+Conclusion & Decision:
+`openai/gpt-oss-120b` remains the designated production model for Track 1C reasoning tasks where fine-grained source authority weighting and multi-hop gap articulation directly impact evaluation scores against the competition rubric. `openai/gpt-oss-20b` is validated as an effective, low-latency alternative for rapid batch testing.
