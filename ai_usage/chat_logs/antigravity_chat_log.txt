@@ -123,6 +123,38 @@ Actions & Resolution:
   4. Verified full test suite on `main` (14/14 tests passed).
   5. Committed merge (`3ef64f5`).
 
+
+
+================================================================================
+SECTION 5 — MEMBER 1 DOCUMENT INGESTION, INDEXING & REPO CONSOLIDATION
+================================================================================
+User prompt:
+  "check if i have indexed the corpus and if not do the changes,thn this project folder is located in    2 diffrent places so please keep the correct one and delete the other, i prefer to keep the folder
+   which is in the F:\OneDrive\Documents\AI-Avengers-codefest-2026"
+
+Contributor: Member 1 — Document Processing & Retrieval Engineer (Ifaza)
+Working Branch: Ifaza-ingestion
+Session Date: 2026-09-09
+
+Actions & Resolution:
+  1. Corpus & Secrets Preservation:
+     - Preserved raw dataset at `data/corpus/Ashen_Era_Archive`.
+     - Migrated API credentials (`GROQ_API_KEY`, `VOYAGE_API_KEY`) to `.env`.
+  2. Virtual Environment Setup:
+     - Created clean Python virtual environment `venv` at `F:\OneDrive\Documents\AI-Avengers-codefest-2026\venv`.
+     - Installed all project requirements (`openai`, `voyageai`, `chromadb`, `pypdf`, `python-docx`, `markdown`).
+  3. Environment Configuration & Rate-Limit Optimization:
+     - Configured `VOYAGE_DOC_MODEL=voyage-3-large` in `.env` to prevent rate-limit errors on unpaid Voyage AI API tier.
+  4. Corpus Indexing & Vector Store:
+     - Ran indexing pipeline (`src.retrieval.index_corpus`) creating persistent ChromaDB vector store (`data/vector_db`).
+     - Indexed 1,440 documents / pages (2,186 chunks).
+  5. Search Verification & Test Suite:
+     - Verified production retrieval pipeline `search("Gauntlet of Sorrowfell forging", top_k=5)` returning Codex Vaeloria II page 11 (year 391 AS).
+     - Executed Member 1 unit test suite (`python -m unittest discover tests`), 10/10 tests passed.
+  6. Repository Consolidation:
+     - Safely removed duplicate clone at `C:\Users\Admin\AI-Avengers-codefest-2026`, consolidating single canonical repository at `F:\OneDrive\Documents\AI-Avengers-codefest-2026`.
+
 ================================================================================
 END OF LOG
 ================================================================================
+
