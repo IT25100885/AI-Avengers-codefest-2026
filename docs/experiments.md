@@ -189,12 +189,12 @@ directly addressing the rubric's "how do you handle conflicting sources"
 requirement.
 
 
-## Experiment 007: LLM Model Comparison on Evidence Checker (gpt-oss-20b vs gpt-oss-120b)
+## Experiment 007: Real Retrieval Integration
 
 Date: 2026-09-09
 
 Goal:
-Compare the performance, latency, instruction fidelity, and source authority handling of `openai/gpt-oss-20b` versus `openai/gpt-oss-120b` when acting as the strict evidence-sufficiency judge (`src/agent/evidence_checker.py`).
+Replace the temporary mock retrieval dependency in the live reasoning agent with the production retrieval pipeline.
 
 Configuration:
 - Models evaluated: `openai/gpt-oss-20b` vs `openai/gpt-oss-120b` (via Groq API endpoint)
@@ -264,3 +264,24 @@ Key Observations:
 
 Conclusion:
 The full Track 1C pipeline successfully achieves 100% accuracy on real-world multi-hop questions, conflict resolution, and anti-hallucination over the live 2,186-chunk Ashen Era Archive.
+Change:
+`src/agent/search_agent.py` now imports:
+
+```python
+from src.retrieval.search import search
+```
+
+Production retrieval uses:
+- Voyage AI query embeddings
+- ChromaDB vector search
+- Voyage reranking
+
+Indexing observations:
+- 1,440 document/page entries were loaded.
+- 2,186 text chunks were generated.
+- 86 unsupported standalone files, mainly PNG figure plates, were skipped.
+- Voyage API rate limits were encountered during large-batch indexing.
+- The indexer uses existing chunk IDs to avoid duplicates and support resumable indexing.
+
+Conclusion:
+The live agent is now integrated with the production retrieval module. Full live operation requires a populated local `data/vector_db`, valid Voyage/Groq credentials and provider availability.

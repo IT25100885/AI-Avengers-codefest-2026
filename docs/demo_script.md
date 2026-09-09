@@ -1,101 +1,150 @@
-# SLIIT Codefest 2026 - Track 1C Live Demo Script (3-4 Minutes)
 
-**Role**: Member 3 (Streamlit UI & Application Integration Engineer)  
-**System**: Ashen Era Agentic Search Assistant  
-**Sub-Track**: 1C — Searching the Way a Human Does  
+# SLIIT Codefest 2026 — Track 1C Demonstration Script
 
----
+**Team:** AI Avengers  
+**System:** Ashen Era Agentic Search  
+**Sub-track:** 1C — Searching the Way a Human Does
 
-## Demo Goals for Judges
-1. Prove that the assistant is **not basic 1-shot RAG**, but an **autonomous iterative researcher**.
-2. Visibly showcase multi-round search, query reformulation, and evidence sufficiency evaluation.
-3. Demonstrate that the system **consults authoritative codices to resolve contested dates** (Gloamreach 246 AS, Gauntlet 391 AS).
-4. Highlight adherence to the agreed competition data contract (`answer`, `search_steps`, `sources`).
-5. Demonstrate parameter control (`max_rounds`, `top_k`) in live reasoning mode.
+## Important Demo Rule
 
----
+The final competition video must include a genuine live, unedited end-to-end demonstration using the **Live Agent Pipeline** and real archive retrieval.
 
-## 3-4 Minute Presentation Timeline
+Simulation Mode may be shown briefly as an offline testing feature, but it should not be presented as the real live system.
 
-### 0:00 – 0:45 | Introduction & Problem Setup
-- **Action**: Open the UI at `http://localhost:8501`.
-- **Spoken Script**:
-  > *"Judges, welcome. We are team AI Avengers representing Sub-track 1C: 'Searching the Way a Human Does'. In traditional RAG, a chatbot runs a single embedding search and attempts to answer in one shot. In the Ashen Era Archive, questions are often complex and multi-hop. A human researcher searches, inspects the evidence, notices when initial wiki summaries are incomplete or contested, reformulates the search query to consult authoritative codices, and repeats until they have a grounded answer. That is exactly what our Streamlit system demonstrates today."*
+## Suggested Live Demo Flow
 
----
+### 0:00–0:40 — Problem
 
-### 0:45 – 1:35 | Demo 1: True Multi-Hop Search (Question 1b_005)
-- **Action**: Under **"Choose a competition benchmark question"**, select:
-  `🔥 [1b_005 Multi-Hop] Which war was won by the organization that included Isolde Mournvale as one of its members?`
-  Click **🔍 Search Archive**.
-- **What is on screen**:
-  - **Round 1**:
-    - Query: `Isolde Mournvale`
-    - Status: `⚠️ Insufficient Evidence (Searching Again)`
-    - Decision Trail: Assistant extracted the primary entity, retrieved her membership in **The Silent Choir**, recognized that the war won is not yet found, and paused to reformulate.
-  - **Round 2**:
-    - Query: `The Silent Choir war victory`
-    - Status: `✅ Sufficient Evidence`
-    - Found conflict resolution: **The War of Drowned Light**.
-  - **Grounded Answer**:
-    - Clearly states the Silent Choir won the War of Drowned Light with cited sources (`isolde_mournvale.md`, `the_war_of_drowned_light.md`).
-- **Spoken Script**:
-  > *"Notice what happened here: In Round 1, the agent retrieved Isolde's affiliation with The Silent Choir. The evidence checker flagged this as insufficient because the war victory was still missing. The rewriter generated a targeted second query for 'The Silent Choir war victory', which concluded in Round 2 with full citations."*
+Spoken explanation:
 
----
+> We selected Sub-track 1C because archive questions often require more than one search. Our system works like a human researcher: it searches, checks the evidence, detects what is missing, rewrites the query, searches again, and only then produces a grounded answer.
 
-### 1:35 – 2:30 | Demo 2: Resolving Contested Evidence via Authoritative Codex (Question 1c_000)
-- **Action**: Select preset:
-  `🏛️ [1c_000 Multi-Round Benchmark] State the precise year in the Age of Shadows that marks the true founding of Gloamreach.`
-  Click **🔍 Search Archive**.
-- **What is on screen**:
-  - **Round 1**: Query `Gloamreach` &rarr; wiki records that founding is contested and directs consultation of the Codex. Status: `⚠️ Insufficient Evidence`.
-  - **Round 2**: Query `Codex Vaeloria Gloamreach founding year Age of Shadows` &rarr; consults **Codex Vaeloria I: Gazetteer of the Sundered Realms** (page 23).
-  - **Status**: `✅ Sufficient Evidence`.
-  - **Final Answer**:
-    - Concludes that Gloamreach was founded in **246 AS**, noting that the authoritative Codex explicitly rejects competing popular claims.
-- **Spoken Script**:
-  > *"In Question 1c_000, the initial wiki article marks the founding year as contested. Instead of hallucinating or giving up, the assistant follows the wiki's reference to the authoritative Codex Vaeloria I, performing a second targeted search that confirms the true founding year: 246 AS."*
+### 0:40–1:10 — Architecture
 
----
+Show the architecture diagram and explain:
 
-### 2:30 – 3:00 | Demo 3: Direct Lookup & Unsupported Query Boundaries
-- **Action**:
-  1. Select preset `🎯 [Direct Lookup] Which organization includes Isolde Mournvale as a member?`.
-     Show that it completes immediately in **Round 1** (`The Silent Choir`), without needlessly executing a second war search.
-  2. Enter a custom unsupported query in simulation mode.
-     Show that it cleanly displays: *"No simulation available for this question"*, proving the simulation does not invent fake facts or fabricated search steps.
-- **Spoken Script**:
-  > *"Notice our boundaries: direct single-hop questions resolve in 1 round without unnecessary looping, and our simulation mode refuses to invent fake answers for unsupported questions, preserving complete integrity."*
+```text
+Question
+→ Planner
+→ Voyage Query Embedding
+→ ChromaDB Retrieval
+→ Voyage Reranking
+→ Evidence Sufficiency Check
+→ Query Rewrite if needed
+→ Grounded Answer
+```
 
----
+Mention that Groq powers reasoning and Voyage AI + ChromaDB power semantic retrieval.
 
-### 3:00 – 3:30 | Demo 4: Live Agent Architecture & Parameter Control
-- **Action**:
-  - In the sidebar, toggle to **Live Agent Pipeline (`src.agent.search_agent`)**.
-  - Highlight the active **Max Search Rounds** and **Retrieval Top-K** sliders.
-  - Scroll to the bottom and expand **"🔍 Inspect Official Data Contract JSON"**.
-- **Spoken Script**:
-  > *"In Live Agent Mode, our sliders dynamically pass search budgets into the reasoning loop. If an API key is missing or fails, the interface displays the error transparently without silent fallbacks. And as you can see in the JSON inspector, our schema strictly complies with the competition contract."*
+### 1:10–2:30 — Live Real-Input Demo 1
 
----
+Switch the UI to:
 
-### 3:30 – 4:00 | Summary & Q&A Handoff
-- **Spoken Script**:
-  > *"In summary, Member 3's UI provides a transparent, demo-ready window into the assistant's decision-making process. Thank you, and we welcome your questions!"*
+```text
+Live Agent Pipeline (src.agent.search_agent)
+```
 
----
+Use:
 
-## Anticipated Judge Q&A Cheat Sheet
+```text
+State the precise year in the Age of Shadows that marks the true founding of Gloamreach.
+```
 
-1. **Q: What makes your solution Track 1C rather than normal RAG?**  
-   *A: Normal RAG does `query -> 1 retrieval -> LLM answer`. Track 1C uses an autonomous loop: `query -> retrieval -> sufficiency check -> gap detection -> query rewrite -> repeat until grounded`.*
+Show:
 
-2. **Q: Why are Gloamreach and Gauntlet dates 246 AS and 391 AS?**  
-   *A: As verified in `src/evaluation/questions.json`, Codex Vaeloria I (p. 23) establishes Gloamreach was founded in 246 AS, and Codex Vaeloria II (p. 11) confirms the Gauntlet was forged in 391 AS. Both codices explicitly reject contrary popular accounts.*
+- search query
+- retrieved evidence
+- sufficiency decision
+- rewritten query if required
+- final grounded answer
+- cited archive sources
 
-3. **Q: What is the current retrieval status of Live Agent Mode?**  
-   *A: Live Agent Mode runs the real Groq LLM reasoning agent (`src.agent.search_agent`) over structured archive retrieval (`src.retrieval.mock_search`). Member 1's ChromaDB and Voyage embedding pipeline over the full corpus will plug in seamlessly to replace the mock retrieval backend.*
+Do not narrate a specific number of rounds in advance; describe what the real run actually does.
 
-4. **Q: How can a judge run this from a clean machine?**  
-   *A: Clone the repository, run `pip install -r requirements.txt`, and execute `streamlit run src/app.py`. Simulation mode runs instantly out-of-the-box without needing external API keys.*
+### 2:30–3:40 — Live Real-Input Demo 2
+
+Use:
+
+```text
+In which year was the 'Gauntlet of Sorrowfell' actually forged?
+```
+
+Again show the actual search trail and sources produced by Live Mode.
+
+### 3:40–4:20 — Multi-Hop Behavior
+
+Use:
+
+```text
+Which war was won by the organization that included Isolde Mournvale as one of its members?
+```
+
+Explain how the system may first identify the organization and then search for the war associated with that organization.
+
+### 4:20–4:50 — Controls and Transparency
+
+Show:
+
+- Max Search Rounds
+- Retrieval Top-K
+- source/citation display
+- JSON data-contract inspector
+- transparent error handling
+
+### 4:50–5:20 — Limitations
+
+Briefly mention:
+
+- image-only content is not OCR-indexed
+- standalone PNG figure plates are not in the text index
+- generated vector index is local and not committed
+- external APIs can be affected by rate limits
+
+### 5:20–5:40 — Team Roles
+
+- Ifaza — ingestion and retrieval
+- Abdullah — reasoning agent
+- Sameeha — UI and integration
+- Rithika — evaluation, QA and documentation
+
+## Judge Q&A
+
+### What makes this Track 1C instead of normal RAG?
+
+Normal single-turn RAG typically performs one retrieval and immediately asks the LLM to answer.
+
+Our system performs an iterative loop:
+
+```text
+retrieve
+→ inspect evidence
+→ detect missing information
+→ rewrite query
+→ retrieve again
+→ answer when sufficient
+```
+
+### What retrieval does Live Mode actually use?
+
+Live Mode calls the real search module:
+
+```python
+from src.retrieval.search import search
+```
+
+That module uses Voyage AI query embeddings, ChromaDB vector retrieval and Voyage reranking.
+
+### Why do you still have Simulation Mode?
+
+Simulation Mode is an explicit offline testing and presentation-support feature.
+
+It is clearly labeled and does not silently replace failed live execution.
+
+### How does a judge run Live Mode?
+
+1. Install `requirements.txt`.
+2. Add `GROQ_API_KEY` and `VOYAGE_API_KEY` to `.env`.
+3. Place the Ashen Era Archive at `data/corpus/Ashen_Era_Archive/`.
+4. Run `python -m src.retrieval.index_corpus`.
+5. Run `streamlit run src/app.py`.
+6. Select Live Agent Pipeline.

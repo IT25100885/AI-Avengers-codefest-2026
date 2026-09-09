@@ -1,116 +1,300 @@
 # Ashen Era Agentic Search
 
 **SLIIT Codefest 2026 AI Competition**  
-**Sub-Track**: 1C — Searching the Way a Human Does  
+**Sub-Track:** 1C — Searching the Way a Human Does
 
 ---
 
 ## Overview
 
-Unlike standard single-turn RAG systems that execute one embedding query and feed the output directly to an LLM, this assistant demonstrates **autonomous, human-like iterative research behavior**:
-1. **Initial Search Planning**: Extracts the primary named entity to start the investigation.
-2. **Evidence Sufficiency Judgment**: Evaluates retrieved facts to determine if the specific question can be fully and conclusively answered without guessing.
-3. **Information Gap Detection**: Flags missing connections or contested claims across archive documents.
-4. **Targeted Query Reformulation**: Formulates new search queries to bridge identified evidence gaps.
-5. **Multi-Round Evidence Accumulation**: Searches up to an assigned round budget (default 3 rounds) before synthesizing an authoritative, grounded answer with granular citations.
+Ashen Era Agentic Search is an iterative document-research assistant built for Sub-track 1C.
+
+Instead of performing one retrieval step and immediately answering, the system follows a human-like research loop:
+
+1. Plan an initial search.
+2. Retrieve evidence from the Ashen Era Archive.
+3. Check whether the evidence is sufficient.
+4. Identify missing information.
+5. Rewrite the query when required.
+6. Search again and accumulate evidence.
+7. Generate a grounded answer with source information.
+
+This allows the system to handle multi-step questions and conflicting archive sources more effectively than a single-turn retrieval workflow.
 
 ---
 
 ## Team & Roles
 
-| Member | Name | Responsibility & Modules |
+| Member | Name | Responsibility |
 |---|---|---|
-| **Member 1** | Ifaza | **Document Processing & Retrieval**: Ingestion (`src/ingestion/`), chunking, metadata preservation, Voyage AI embeddings, ChromaDB vector store (`src/retrieval/`). |
-| **Member 2** | Abdullah | **AI & Reasoning Agent**: Groq LLM client (`src/llm/client.py`), search planner (`src/agent/planner.py`), sufficiency checker (`src/agent/evidence_checker.py`), query rewriter (`src/agent/query_rewriter.py`), and search agent loop (`src/agent/search_agent.py`). |
-| **Member 3** | Sameeha | **Streamlit UI & Application Integration**: Interactive web UI (`src/app.py`), multi-round search visualization, simulation engine (`src/ui/mock_backend.py`), slider parameter integration, and live demo preparation (`docs/demo_script.md`). |
-| **Member 4** | Rithika | **Evaluation, QA & Documentation**: Evaluation harness (`src/evaluation/evaluate.py`), benchmark questions (`src/evaluation/questions.json`), rubric scoring, and limitation analysis. |
+| Member 1 | Ifaza | Document ingestion, chunking, metadata, Voyage embeddings, ChromaDB vector store, retrieval and reranking |
+| Member 2 | Abdullah | Groq LLM client, planner, evidence checker, query rewriter, iterative search loop and answer generation |
+| Member 3 | Sameeha | Streamlit UI, backend integration, search visualization, error handling and demo preparation |
+| Member 4 | Rithika | Evaluation harness, benchmark testing, QA, limitation analysis and submission documentation |
 
 ---
 
-## Architecture & Execution Modes
+## Architecture
 
-The application provides two operational modes via the sidebar toggle:
+```mermaid
+flowchart TD
+    A[User Question] --> B[Streamlit UI]
+    B --> C[Initial Query Planner]
+    C --> D[Voyage Query Embedding]
+    D --> E[ChromaDB Vector Search]
+    E --> F[Voyage Reranking]
+    F --> G[Evidence Sufficiency Checker]
 
-### 1. Simulation Mode (Offline / Competition Demo)
-- **Purpose**: Provides instant, deterministic multi-round demonstration traces for competition presentations and offline testing without requiring active API keys.
-- **Supported Questions**: Pre-configured for official benchmark questions:
-  - `1b_005 Multi-Hop`: Isolde Mournvale &rarr; The Silent Choir &rarr; War of Drowned Light (2 rounds).
-  - `1c_000 Multi-Round Benchmark`: Gloamreach founding year &rarr; resolved to **246 AS** via Codex Vaeloria I (p. 23) (2 rounds).
-  - `1c_003 Multi-Round Benchmark`: Gauntlet of Sorrowfell forging date &rarr; resolved to **391 AS** via Codex Vaeloria II (p. 11) (2 rounds).
-  - `Direct Lookup`: Isolde Mournvale membership &rarr; The Silent Choir (1 round).
-  - `Robustness Test`: Gibberish input handling (1 round, polite rejection).
-- **Boundaries**: Arbitrary custom questions return a clear refusal: *"No simulation available for this question. Please switch to Live Agent Pipeline."* No answers or search traces are invented.
-- **Controls**: Parameter sliders are disabled in simulation mode as traces are pre-computed.
+    G -->|Sufficient| H[Grounded Answer Generator]
+    H --> I[Final Answer + Sources]
 
-### 2. Live Agent Pipeline (`src.agent.search_agent`)
-- **Purpose**: Executes the live LLM reasoning loop using Groq and the OpenAI-compatible client with exponential backoff (`tenacity`).
-- **Parameter Controls**: Sidebar sliders for **Max Search Rounds** and **Retrieval Top-K** are dynamically passed into each search execution.
-- **Retrieval Status**: Live Mode currently operates using the live Groq LLM reasoning loop over the structured archive test retrieval module (`src.retrieval.mock_search`). Full-archive ChromaDB + Voyage AI embedding retrieval is currently being integrated by Member 1 to replace mock retrieval.
-- **Error Boundaries**: If live API execution fails (e.g. missing `GROQ_API_KEY`, rate limits, or network timeout), the UI displays the error transparently without silent fallback to mock data.
+    G -->|Insufficient| J[Identify Missing Information]
+    J --> K[Query Rewriter]
+    K --> D
+```
+
+More detail is available in `docs/architecture.md`.
 
 ---
 
-## Quick Start & Setup
+## Execution Modes
 
-### 1. Environment Setup
-Clone the repository and install dependencies:
+### Simulation Mode
+
+Simulation Mode provides deterministic benchmark traces for offline testing and presentation support.
+
+It does not silently replace failed live execution. Unsupported simulation questions return a clear message instead of inventing an answer.
+
+### Live Agent Pipeline
+
+Live Mode executes the real Track 1C pipeline:
+
+```text
+Question
+→ Planner
+→ Voyage Query Embedding
+→ ChromaDB Retrieval
+→ Voyage Reranking
+→ Evidence Sufficiency Check
+→ Query Rewrite if needed
+→ Grounded Answer
+```
+
+The live agent is connected through:
+
+```python
+from src.retrieval.search import search
+```
+
+A populated local ChromaDB index is required for full-archive live retrieval.
+
+---
+
+## Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd AI-Avengers-codefest-2026
+```
+
+### 2. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configure API Keys (for Live Agent Mode)
-Copy `.env.example` to `.env`:
+### 3. Configure Environment Variables
+
+Copy `.env.example` to `.env`.
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Linux/macOS:
+
 ```bash
 cp .env.example .env
 ```
-Set your Groq API credentials:
+
+Add your own keys:
+
 ```dotenv
 GROQ_API_KEY=your_groq_api_key_here
-LLM_MODEL=openai/gpt-oss-120b
+VOYAGE_API_KEY=your_voyage_api_key_here
+LLM_MODEL=llama-3.3-70b-versatile
 ```
-*(Note: Simulation Mode runs completely out-of-the-box without an API key).*
 
-### 3. Launch the Streamlit Web UI
-Run the application from the project root:
-```bash
-streamlit run src/app.py
-```
-Alternatively:
-```bash
-streamlit run app.py
-```
-Access the application in your browser at `http://localhost:8501`.
+Never commit the real `.env` file.
 
 ---
 
-## Running CLI & Evaluation Scripts
+## Prepare the Ashen Era Corpus
 
-### Execute Live Agent via CLI
-Run the standalone search agent example:
+Place the extracted competition corpus at:
+
+```text
+data/
+└── corpus/
+    └── Ashen_Era_Archive/
+        ├── chronicles/
+        ├── wiki/
+        ├── codex/
+        ├── ephemera/
+        └── images/
+```
+
+The corpus itself is intentionally excluded from Git.
+
+---
+
+## Build the Local Vector Index
+
+Run:
+
+```bash
+python -m src.retrieval.index_corpus
+```
+
+For accounts with low Voyage API rate limits, use a smaller embedding batch:
+
+```bash
+python -m src.retrieval.index_corpus --batch-size 4
+```
+
+The indexer checks existing chunk IDs, so interrupted indexing can be resumed without duplicating previously stored chunks.
+
+The generated ChromaDB database is stored at:
+
+```text
+data/vector_db/
+```
+
+This directory is intentionally excluded from Git because it is generated locally.
+
+Check index status with:
+
+```bash
+python check_index_status.py
+```
+
+or:
+
+```bash
+python -c "from src.retrieval.vector_store import ChromaVectorStore; s=ChromaVectorStore(); print('Indexed chunks:', s.count())"
+```
+
+---
+
+## Run the Application
+
+```bash
+streamlit run src/app.py
+```
+
+Alternative entry point:
+
+```bash
+streamlit run app.py
+```
+
+Then open:
+
+```text
+http://localhost:8501
+```
+
+For real archive search, select:
+
+```text
+Live Agent Pipeline (src.agent.search_agent)
+```
+
+---
+
+## Run the Agent from the CLI
+
 ```bash
 python -m src.agent.search_agent
 ```
 
-### Run Automated Unit Tests
-Run the comprehensive test suite covering data contracts, parameter passing, and error boundaries:
+---
+
+## Evaluation
+
+Run:
+
+```bash
+python -m src.evaluation.evaluate
+```
+
+Evaluation results are saved with timestamps in:
+
+```text
+src/evaluation/results/
+```
+
+---
+
+## Tests
+
+Run:
+
 ```bash
 python -m unittest discover tests
 ```
 
-### Run Evaluation Suite
-Execute the 5-question evaluation harness:
+or, where applicable:
+
 ```bash
-python -m src.evaluation.evaluate
+pytest
 ```
-Results are timestamped and saved in `src/evaluation/results/`.
 
 ---
 
-## Documentation Links
+## Known Limitations
 
-- **[Decisions Log](docs/decisions.md)**: Architectural decisions and evolution records.
-- **[Live Demo Script](docs/demo_script.md)**: 3-4 minute presentation walkthrough and judge Q&A guide.
-- **[Experiments & Results](docs/experiments.md)**: Benchmark logs and prompt experimentation.
-- **[System Limitations](docs/limitations.md)**: Documented system constraints and failure modes.
-- **[Evaluation Rubric](docs/evaluation-rubric.md)**: Scoring guidelines for Track 1C evaluation.
-- **[AI Usage Disclosure](ai_usage/ai-usage-disclosure.md)**: Full disclosure of AI-assisted engineering and chat logs.
+- Standalone PNG figure plates are not indexed by the current text ingestion pipeline.
+- Image-only or scanned content without extractable text may not be searchable because OCR is not currently implemented.
+- DOCX files do not always provide reliable rendered page numbers.
+- Live Mode depends on Groq and Voyage AI availability and rate limits.
+- The agent uses a configurable maximum search-round limit.
+- Retrieval quality still depends on finding the most authoritative evidence when archive sources conflict.
+- The local vector index is generated separately and is not stored in Git.
+
+See `docs/limitations.md` for the full discussion.
+
+---
+
+## AI Usage
+
+AI tools were used as development, debugging, review and documentation assistants.
+
+Full disclosure is available in:
+
+```text
+ai_usage/ai-usage-disclosure.md
+```
+
+Exported development chat logs are stored in:
+
+```text
+ai_usage/chat_logs/
+```
+
+---
+
+## Documentation
+
+- `docs/architecture.md` — system architecture
+- `docs/decisions.md` — technical decisions
+- `docs/experiments.md` — experiments and evaluation history
+- `docs/limitations.md` — known limitations
+- `docs/demo_script.md` — final demonstration guide
+- `docs/evaluation-rubric.md` — internal evaluation rubric
+- `docs/submission_report_draft.md` — report source
+- `ai_usage/ai-usage-disclosure.md` — AI usage disclosure
