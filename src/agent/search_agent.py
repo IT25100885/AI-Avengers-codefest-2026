@@ -22,7 +22,9 @@ from src.agent.planner import plan_initial_query
 from src.agent.evidence_checker import check_sufficiency
 from src.agent.query_rewriter import rewrite_query
 from src.generation.answer_generator import generate_answer
-from src.retrieval.mock_search import search
+from src.retrieval.search import search
+
+from typing import Optional
 
 MAX_ROUNDS = int(os.getenv("MAX_SEARCH_ROUNDS", 3))
 TOP_K = int(os.getenv("SEARCH_TOP_K", 15))
@@ -38,31 +40,32 @@ def _dedupe(evidence_list: list[dict]) -> list[dict]:
     return unique
 
 
-def answer_question(question: str) -> dict:
-    cleaned_question = question.strip() if question else ""
-    if not cleaned_question or not any(c.isalnum() for c in cleaned_question):
+def answer_question(
+    question: str,
+    max_rounds: Optional[int] = None,
+    top_k: Optional[int] = None,
+) -> dict:
+    if not question or not question.strip():
         return {
-            "answer": "Please provide a valid question about the Ashen Era Archive.",
+            "answer": "No question was provided. Please enter an inquiry to search the archive.",
             "search_steps": [],
             "sources": [],
         }
+
+    cleaned_question = question.strip()
+
+    effective_max_rounds = max_rounds if max_rounds is not None else int(os.getenv("MAX_SEARCH_ROUNDS", 3))
+    effective_top_k = top_k if top_k is not None else int(os.getenv("SEARCH_TOP_K", 15))
 
     search_steps = []
     accumulated_evidence: list[dict] = []
     previous_queries: list[str] = []
 
     query = plan_initial_query(cleaned_question)
-    if not query.strip():
-        query = cleaned_question
 
-    for round_num in range(1, MAX_ROUNDS + 1):
-        # Stop condition: prevent repeating duplicate search queries
-        normalized_query = query.strip().lower()
-        if normalized_query in [q.strip().lower() for q in previous_queries]:
-            break
-
+    for round_num in range(1, effective_max_rounds + 1):
         previous_queries.append(query)
-        results = search(query, top_k=TOP_K)
+        results = search(query, top_k=effective_top_k)
         accumulated_evidence = _dedupe(accumulated_evidence + results)
 
         check = check_sufficiency(cleaned_question, accumulated_evidence)
@@ -73,26 +76,18 @@ def answer_question(question: str) -> dict:
             "query": query,
             "sources_found": len(results),
             "status": status,
+            "missing_info": check.get("missing_information", ""),
         })
 
-        if status == "sufficient" or round_num == MAX_ROUNDS:
+        if status == "sufficient" or round_num == effective_max_rounds:
             break
 
-        # Stop condition: if 2 consecutive rounds yielded 0 total evidence, stop to prevent query drift
-        if round_num >= 2 and len(accumulated_evidence) == 0:
-            break
-
-        next_query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
-        if not next_query.strip() or next_query.strip().lower() in [q.strip().lower() for q in previous_queries]:
-            # Stop condition: rewriter cannot formulate a new distinct query
-            break
-
-        query = next_query
+        query = rewrite_query(cleaned_question, check["missing_information"], previous_queries)
 
     answer_text = generate_answer(cleaned_question, accumulated_evidence)
 
     sources = [
-        {"source": e["source"], "page": e.get("page")}
+        {"source": e["source"], "page": e.get("page"), "category": e.get("category")}
         for e in accumulated_evidence
     ]
     # dedupe sources by (source, page)
