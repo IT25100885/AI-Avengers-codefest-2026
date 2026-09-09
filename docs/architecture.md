@@ -2,9 +2,9 @@
 
 ## Overview
 
-Ashen Era Agentic Search is a Track 1C system designed to search the document archive iteratively rather than relying on a single retrieval step.
+Ashen Era Agentic Search is a Track 1C system designed to perform iterative document research instead of relying on a single retrieval step.
 
-The system searches for evidence, checks whether enough information has been found, identifies missing information, reformulates the search query, and searches again until sufficient evidence is available or the maximum number of rounds is reached.
+The system searches the Ashen Era Archive, evaluates whether the retrieved evidence is sufficient, identifies missing information, reformulates the query when required, and continues searching until sufficient evidence is found or the maximum search-round limit is reached.
 
 ## High-Level Flow
 
@@ -21,19 +21,25 @@ Search Agent
 Initial Query Planner
   |
   v
-Document Retrieval
+Retrieval Pipeline
+  |
+  +--> Query Embedding (Voyage AI)
+  |
+  +--> ChromaDB Vector Search
+  |
+  +--> Voyage Reranking
   |
   v
 Evidence Sufficiency Checker
   |
-  +---------------------------+
-  |                           |
-  | Insufficient              | Sufficient
-  v                           v
-Query Rewriter          Answer Generator
-  |                           |
-  v                           v
-Search Again            Final Answer
-                              |
-                              v
-                       Sources / Citations
+  +-------------------------------+
+  |                               |
+  | Insufficient                  | Sufficient
+  v                               v
+Query Rewriter              Answer Generator
+  |                               |
+  v                               v
+Search Again                 Final Answer
+                                  |
+                                  v
+                           Sources / Citations
