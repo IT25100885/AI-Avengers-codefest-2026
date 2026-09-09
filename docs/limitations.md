@@ -57,3 +57,9 @@ This prevents infinite loops, but a difficult question may occasionally require 
 The evaluation set includes official Track 1C questions, multi-hop questions, direct lookup tests, and robustness tests.
 
 The set is useful for system validation but is still relatively small and cannot represent every possible question over the Ashen Era Archive.
+
+## 8. Standalone Image File Indexing
+
+Standalone image files are currently not indexed.
+
+During corpus ingestion, 86 unsupported files, mainly PNG figure plates, were skipped. This limits retrieval of information that is available only within those images.

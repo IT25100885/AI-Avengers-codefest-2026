@@ -93,6 +93,9 @@ def run_indexing(
         store.add_chunks(batch, embeddings)
         added_count += len(batch)
 
+        # Respect Voyage free account rate limits
+        time.sleep(21)
+
     elapsed = time.time() - start_time
     print(f"\n=== Indexing Complete ===")
     print(f"Successfully added: {added_count} chunks in {elapsed:.1f}s")
