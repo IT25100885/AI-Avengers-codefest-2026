@@ -1,65 +1,70 @@
 # Known Limitations
 
-## 1. Final End-to-End Retrieval Validation Pending
+## 1. Local Vector Index Requirement
 
-The full retrieval pipeline has now been implemented using document ingestion, chunking, Voyage AI embeddings, ChromaDB, and reranking.
+The live retrieval pipeline is implemented using document ingestion, chunking, Voyage AI embeddings, ChromaDB vector search, and Voyage reranking.
 
-However, final end-to-end validation is still pending while the latest integration fixes are completed.
+The generated ChromaDB database is intentionally excluded from Git and must be built locally from the Ashen Era Archive before full live retrieval can run.
 
-The final evaluation must be rerun after the live retrieval pipeline is confirmed working correctly.
+This means a clean machine must first configure the corpus and execute the indexing pipeline.
 
-## 2. Scanned / Image-Only PDFs
+## 2. Scanned / Image-Only Content
 
-Some archive files may be scanned PDFs without an extractable text layer.
+The current text ingestion pipeline relies on extractable document text and does not perform OCR.
 
-The current PDF loader relies on text extraction and does not perform OCR.
+Information that exists only inside image-based or scanned pages may therefore not be searchable.
 
-Therefore, information contained only inside image-based pages may not be searchable.
+## 3. Standalone Image Files
 
-## 3. DOCX Page Numbers
+Standalone image files are currently not indexed by the text retrieval pipeline.
 
-DOCX documents are successfully extracted, including paragraphs and tables.
+During corpus ingestion, 86 unsupported files, mainly PNG figure plates, were skipped. This limits retrieval of facts that appear only inside those images.
 
-However, exact rendered page numbers are not reliably available from DOCX files.
+## 4. DOCX Page Numbers
 
-Citations from these documents may therefore include the source filename without a physical page number.
+DOCX paragraphs and tables can be extracted, but exact rendered page numbers are not reliably available.
 
-## 4. Source Reliability and Conflicting Evidence
-
-The archive contains sources with different levels of authority.
-
-For example, Codex or Gazetteer sources may provide more authoritative information than informal wiki or ephemera material.
-
-The reasoning agent attempts to resolve conflicting evidence, but answer quality still depends on retrieving the relevant authoritative sources.
+Citations from DOCX documents may therefore contain a source filename without a physical page number.
 
 ## 5. External API Dependency
 
-Live mode depends on external APIs including Groq and Voyage AI.
+Live Mode depends on external Groq and Voyage AI services.
 
-Possible failures include:
+Possible failure modes include:
 
 - missing API keys
-- network errors
-- rate limits
+- network failures
 - provider outages
+- rate limits
 - model availability changes
 
-The application should display these failures clearly instead of silently presenting simulation results as live retrieval.
+The application reports live execution failures instead of silently switching to simulation.
 
-## 6. Maximum Search Rounds
+## 6. Voyage AI Rate Limits
 
-The search agent uses a configurable maximum number of search rounds.
+Voyage AI account limits may affect indexing speed and live retrieval throughput.
 
-This prevents infinite loops, but a difficult question may occasionally require more searches than the configured limit.
+During development, low account rate limits caused embedding requests to fail when large batches were sent too quickly.
 
-## 7. Final Evaluation Size
+The indexing pipeline supports smaller batches and duplicate prevention so interrupted indexing can be resumed.
 
-The evaluation set includes official Track 1C questions, multi-hop questions, direct lookup tests, and robustness tests.
+## 7. Source Reliability and Conflicting Evidence
 
-The set is useful for system validation but is still relatively small and cannot represent every possible question over the Ashen Era Archive.
+The Ashen Era Archive intentionally contains sources with different levels of reliability.
 
-## 8. Standalone Image File Indexing
+Official Codex or Gazetteer material may conflict with wiki pages or in-world ephemera.
 
-Standalone image files are currently not indexed.
+The reasoning system attempts to resolve these conflicts, but answer quality still depends on retrieving the relevant authoritative evidence.
 
-During corpus ingestion, 86 unsupported files, mainly PNG figure plates, were skipped. This limits retrieval of information that is available only within those images.
+## 8. Maximum Search Rounds
+
+The search agent uses a configurable maximum number of rounds.
+
+This prevents infinite loops, but some especially difficult questions may require more investigation than the configured limit permits.
+
+## 9. Evaluation Coverage
+
+The development evaluation set includes official Track 1C questions, multi-hop questions, direct lookups and robustness checks.
+
+It is useful for QA but does not represent every possible question in the Ashen Era Archive.
+

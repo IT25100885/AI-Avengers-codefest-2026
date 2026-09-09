@@ -187,3 +187,33 @@ Confirms the evidence-checker and answer-generator correctly weigh source
 authority when sources conflict, not just presence/absence of evidence --
 directly addressing the rubric's "how do you handle conflicting sources"
 requirement.
+
+
+## Experiment 007: Real Retrieval Integration
+
+Date: 2026-09-09
+
+Goal:
+Replace the temporary mock retrieval dependency in the live reasoning agent with the production retrieval pipeline.
+
+Change:
+`src/agent/search_agent.py` now imports:
+
+```python
+from src.retrieval.search import search
+```
+
+Production retrieval uses:
+- Voyage AI query embeddings
+- ChromaDB vector search
+- Voyage reranking
+
+Indexing observations:
+- 1,440 document/page entries were loaded.
+- 2,186 text chunks were generated.
+- 86 unsupported standalone files, mainly PNG figure plates, were skipped.
+- Voyage API rate limits were encountered during large-batch indexing.
+- The indexer uses existing chunk IDs to avoid duplicates and support resumable indexing.
+
+Conclusion:
+The live agent is now integrated with the production retrieval module. Full live operation requires a populated local `data/vector_db`, valid Voyage/Groq credentials and provider availability.

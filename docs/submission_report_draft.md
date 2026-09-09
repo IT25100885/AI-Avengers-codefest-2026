@@ -2,156 +2,161 @@
 ## SLIIT Codefest 2026 AI Competition
 
 **Sub-track:** 1C — Searching the Way a Human Does  
-**Demo Video:** [ADD UNLISTED YOUTUBE LINK AFTER RECORDING]
+**Demo Video:** PASTE_UNLISTED_YOUTUBE_LINK_HERE
 
 ---
 
 ## 1. Problem Statement
 
-The Ashen Era Archive contains hundreds of interconnected documents across PDF, DOCX, Markdown, plain text, and scanned formats.
+The Ashen Era Archive contains hundreds of interconnected documents across PDF, DOCX, Markdown, plain text, scans and images.
 
-Many questions cannot be answered using a single search because relevant facts may be spread across multiple documents, and different archive sources may disagree.
+Many questions cannot be answered reliably using a single retrieval because evidence may be distributed across several sources and those sources may disagree.
 
-For Sub-track 1C, our goal was to build an assistant that searches iteratively like a human researcher: it retrieves evidence, evaluates whether the evidence is sufficient, identifies what is still missing, reformulates its search, and continues until it can produce a grounded answer.
+For Sub-track 1C, our objective was to build an assistant that searches iteratively like a human researcher: retrieve evidence, judge whether it is sufficient, identify missing information, reformulate the search, and repeat until it can produce a grounded answer.
 
 ---
 
-## 2. Solution Overview
+## 2. Solution Overview and Architecture
 
-Our system uses an agentic multi-round document-search pipeline.
+Our system combines semantic retrieval with an iterative reasoning loop.
 
-The process is:
+```mermaid
+flowchart TD
+    A[User Question] --> B[Initial Query Planner]
+    B --> C[Voyage Query Embedding]
+    C --> D[ChromaDB Vector Search]
+    D --> E[Voyage Reranking]
+    E --> F[Evidence Sufficiency Check]
 
-```text
-User Question
-      |
-      v
-Initial Query Planner
-      |
-      v
-Voyage Query Embedding
-      |
-      v
-ChromaDB Retrieval
-      |
-      v
-Voyage Reranking
-      |
-      v
-Evidence Sufficiency Check
-      |
-      +----------------------+
-      |                      |
- Insufficient             Sufficient
-      |                      |
-      v                      v
-Query Rewriter         Answer Generator
-      |
-      v
-Search Again
+    F -->|Insufficient| G[Query Rewriter]
+    G --> C
+
+    F -->|Sufficient| H[Grounded Answer Generator]
+    H --> I[Answer + Sources]
+```
+
+The Streamlit interface exposes search rounds, query reformulation, evidence status and citations so the research process is visible to the user.
 
 ---
 
 ## 3. Key Technical Decisions
 
 ### Iterative Search Instead of Single-Turn RAG
-We selected an iterative agentic search approach because Track 1C requires the system to reason between searches. After each retrieval round, the agent checks whether the collected evidence is sufficient. If information is missing, it reformulates the query and searches again.
 
-### Voyage AI Embeddings
-Voyage AI is used to create vector embeddings for document chunks and user queries. This allows semantic retrieval even when the wording of the question differs from the wording in the archive.
+We selected an agentic multi-round workflow because Track 1C requires the system to decide whether another search is necessary rather than always answering after one retrieval.
 
-### ChromaDB Vector Store
-ChromaDB was selected as the persistent vector database because it supports local storage, cosine-similarity retrieval, and repeated searches without rebuilding the index every time.
+### Voyage AI + ChromaDB
+
+Voyage AI creates semantic document/query embeddings while ChromaDB provides a persistent local vector store.
+
+This allows retrieval even when a user's wording differs from the wording inside the archive.
 
 ### Voyage Reranking
-Initial ChromaDB results are reranked so that the strongest evidence is prioritized before it is passed to the reasoning agent.
 
-### Groq LLM
-Groq provides the LLM used for query planning, evidence sufficiency checking, query rewriting, and grounded answer generation.
+Retrieved candidates are reranked before reasoning so the strongest evidence is prioritized.
 
-### Search-Round Limit
-A configurable maximum search-round limit is used to prevent endless search loops while still allowing the agent to perform multiple searches when necessary.
+### Groq Reasoning Agent
+
+Groq is used for initial query planning, evidence-sufficiency judgment, query rewriting and final grounded answer generation.
+
+### Explicit Simulation vs Live Mode
+
+Simulation Mode is retained only as a clearly labeled offline testing feature.
+
+Live Mode is connected to the real retrieval module:
+
+```python
+from src.retrieval.search import search
+```
+
+There is no silent automatic fallback from failed live execution to simulation.
 
 ---
 
 ## 4. What Works
 
-The implemented system currently supports:
+The project implements:
 
-- Loading PDF, DOCX, Markdown, and plain-text archive documents.
-- Splitting extracted content into searchable chunks while preserving metadata.
-- Generating semantic embeddings with Voyage AI.
-- Persisting indexed chunks in ChromaDB.
-- Semantic retrieval followed by Voyage reranking.
-- Initial query planning.
-- Multi-round evidence accumulation.
-- Evidence sufficiency checking.
-- Query rewriting when information is incomplete.
-- Grounded answer generation with source information.
-- A Streamlit interface that visualizes the search process.
-- Configurable search rounds and retrieval Top-K.
-- Automated evaluation scripts and stored evaluation results.
-- Simulation mode for deterministic demonstration and live mode for the real agent pipeline.
+- PDF, DOCX, Markdown and plain-text ingestion
+- metadata-preserving document chunking
+- Voyage AI document and query embeddings
+- ChromaDB persistent vector retrieval
+- duplicate prevention during indexing
+- Voyage reranking
+- initial query planning
+- evidence accumulation across rounds
+- evidence-sufficiency checking
+- query rewriting
+- grounded answer generation
+- source/citation output
+- Streamlit search-trail visualization
+- configurable search rounds and Top-K retrieval
+- evaluation scripts and stored evaluation results
+- transparent live-mode errors
+- explicit offline Simulation Mode
 
-During the final corpus indexing process, 1,440 document/page entries were successfully loaded and converted into 2,186 searchable chunks.
+Corpus ingestion produced 1,440 document/page entries and 2,186 text chunks during development.
 
-**Final live evaluation results will be added after corpus indexing and end-to-end validation are completed.**
+The generated vector database is local and intentionally excluded from Git.
 
 ---
 
-## 5. Limitations
+## 5. Limitations and Failed Approaches
 
-The current system has several known limitations:
+Standalone image files are not currently part of the text index. During ingestion, 86 unsupported files, mainly PNG figure plates, were skipped.
 
-- Standalone image files are not currently indexed. During ingestion, 86 unsupported files, mainly PNG figure plates, were skipped.
-- Image-only or scanned content without extractable text may not be searchable because OCR is not currently implemented.
-- Exact page numbers cannot always be recovered reliably from DOCX documents.
-- Live mode depends on external Groq and Voyage AI services and may be affected by API rate limits, network failures, or provider availability.
-- The agent has a fixed maximum number of search rounds, so especially difficult questions may require more searches than allowed.
-- Conflicting archive sources can affect answer quality when the most authoritative evidence is not retrieved.
+The loader does not currently perform OCR, so facts available only inside image-based scans may be unavailable to text retrieval.
 
-A more detailed limitation analysis is available in `docs/limitations.md`.
+DOCX files do not always provide reliable physical page numbers.
+
+Live execution depends on Groq and Voyage AI availability and may be affected by API rate limits.
+
+During development, Voyage rate limits caused large embedding batches to fail. The team responded by reducing batch sizes and relying on resumable indexing with duplicate prevention.
+
+The system also limits the maximum number of iterative search rounds to prevent endless loops.
 
 ---
 
 ## 6. Evaluation and Validation
 
-The evaluation harness runs benchmark questions through the same `answer_question()` interface used by the live reasoning agent.
+The evaluation harness calls the same `answer_question()` interface used by the reasoning agent and stores:
 
-For each question, it records:
-
+- question
+- expected answer
 - generated answer
 - search rounds
-- queries used
-- retrieved sources
-- expected answer
-- reviewer scoring and notes
+- queries
+- sources
+- reviewer scores and notes
 
-The evaluation set includes official Track 1C questions as well as multi-hop, direct-lookup, and robustness tests.
+Development testing included official Track 1C questions, multi-hop questions, direct lookups and robustness cases.
 
-Earlier development evaluations were used to identify weaknesses in retrieval and agent behavior. A final evaluation using the fully indexed Ashen Era Archive will be performed after indexing is complete.
+Earlier mock-based experiments helped test the reasoning loop while retrieval was being integrated. The final code path now connects the reasoning agent to `src.retrieval.search`.
 
-**Final results:** [ADD AFTER FINAL LIVE EVALUATION]
+Evaluation artifacts and experiment history are stored in:
+
+```text
+src/evaluation/results/
+docs/experiments.md
+```
 
 ---
 
 ## 7. AI Usage Disclosure
 
-AI tools were used throughout development as coding, debugging, review, and documentation assistants.
+AI tools were used as coding, debugging, review and documentation assistants.
 
-The team used tools including ChatGPT, Claude, Cursor, and Antigravity for tasks such as:
+Tools used by the team included ChatGPT, Claude, Cursor and Antigravity.
 
-- document-processing development
-- retrieval and embedding implementation
-- reasoning-agent development
-- Streamlit UI implementation
-- debugging and integration
-- evaluation and QA
-- documentation and competition preparation
+Examples of AI-assisted work include ingestion/retrieval development, agent implementation, UI integration, debugging, evaluation planning and documentation.
 
-All AI-assisted outputs were reviewed, tested, and modified by team members before inclusion in the project.
+All AI-assisted outputs were reviewed and modified by team members before inclusion.
 
-Detailed AI usage information and development chat logs are available in the `ai_usage/` directory.
+The detailed disclosure and exported chat histories are stored under:
+
+```text
+ai_usage/
+```
 
 ---
 
@@ -159,17 +164,15 @@ Detailed AI usage information and development chat logs are available in the `ai
 
 | Member | Role | Main Contribution |
 |---|---|---|
-| Ifaza | Document Processing & Retrieval | Ingestion, chunking, metadata, Voyage embeddings, ChromaDB retrieval and reranking |
-| Abdullah | AI & Reasoning Agent | LLM client, search planner, evidence checker, query rewriter and iterative search loop |
-| Sameeha | UI & Application Integration | Streamlit interface, backend integration, search visualization and demo preparation |
+| Ifaza | Document Processing & Retrieval | Ingestion, chunking, metadata, embeddings, ChromaDB retrieval and reranking |
+| Abdullah | AI & Reasoning Agent | LLM client, planner, evidence checker, query rewriter, iterative search loop and answer generation |
+| Sameeha | UI & Application Integration | Streamlit interface, backend integration, search visualization, error handling and demo preparation |
 | Rithika | Evaluation, QA & Documentation | Evaluation harness, benchmark testing, QA, limitation analysis and submission documentation |
 
 ---
 
 ## 9. Conclusion
 
-Ashen Era Agentic Search demonstrates the core requirement of Track 1C: searching in multiple stages rather than relying on one retrieval attempt.
+Ashen Era Agentic Search demonstrates the central idea of Track 1C: search should be an iterative research process rather than a single retrieval attempt.
 
-The system plans a search, retrieves evidence, evaluates what is still missing, reformulates its query when necessary, accumulates evidence across rounds, and finally produces a grounded answer.
-
-This approach is designed to better handle questions whose answers require investigation across the interconnected Ashen Era Archive.
+The system plans a search, retrieves and reranks evidence, checks what is still missing, reformulates the query when necessary, accumulates evidence across rounds, and produces a grounded answer with sources.

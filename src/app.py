@@ -232,24 +232,30 @@ with st.sidebar:
         index=0,
         help=(
             "Simulation Mode: Deterministic benchmark traces for offline judging. "
-            "Live Agent Pipeline: Live Groq LLM reasoning loop."
+            "Live Agent Pipeline: Groq reasoning with Voyage AI + ChromaDB retrieval."
         ),
     )
 
     is_live_mode = (backend_mode == "Live Agent Pipeline (src.agent.search_agent)")
 
-    # Status callout regarding retrieval pipeline
+    # Status callout regarding live reasoning + retrieval pipeline
     if is_live_mode:
         groq_key = os.getenv("GROQ_API_KEY")
+        voyage_key = os.getenv("VOYAGE_API_KEY")
+
         if groq_key and not groq_key.startswith("your_"):
             st.success("🟢 GROQ API Key: Configured")
         else:
-            st.error("🔴 GROQ API Key: Missing (Live calls will fail)")
+            st.error("🔴 GROQ API Key: Missing (Live reasoning calls will fail)")
 
-        st.info(
-            "ℹ️ **Retrieval Status**: Live Mode currently uses the Groq LLM with "
-            "structured mock retrieval (`src.retrieval.mock_search`). Full-archive ChromaDB "
-            "vector retrieval is being integrated by Member 1."
+        if voyage_key and not voyage_key.startswith("your_"):
+            st.success("🟢 VOYAGE API Key: Configured")
+        else:
+            st.error("🔴 VOYAGE API Key: Missing (Live retrieval calls will fail)")
+
+        st.success(
+            "🟢 **Retrieval Status**: Live Mode uses the full Ashen Era Archive "
+            "with Voyage AI query embeddings, ChromaDB vector retrieval, and Voyage reranking."
         )
     else:
         st.info("ℹ️ **Simulation Mode Active**: Running verified pre-recorded benchmark traces.")
