@@ -4,70 +4,13 @@
 
 The full retrieval pipeline has now been implemented using document ingestion, chunking, Voyage AI embeddings, ChromaDB, and reranking.
 
-However, final end-to-end validation is still pending while the latest integration fixes are completed.
+However, final end-to-end validation is still pending while the latest integration fixes are completed. The live reasoning agent has been deliberately decoupled using:
 
-The final evaluation must be rerun after the live retrieval pipeline is confirmed working correctly.
-
-## 2. Scanned / Image-Only PDFs
-
-Some archive files may be scanned PDFs without an extractable text layer.
-
-The current PDF loader relies on text extraction and does not perform OCR.
-
-Therefore, information contained only inside image-based pages may not be searchable.
-
-## 3. DOCX Page Numbers
-
-DOCX documents are successfully extracted, including paragraphs and tables.
-
-However, exact rendered page numbers are not reliably available from DOCX files.
-
-Citations from these documents may therefore include the source filename without a physical page number.
-
-## 4. Source Reliability and Conflicting Evidence
-
-The archive contains sources with different levels of authority.
-
-For example, Codex or Gazetteer sources may provide more authoritative information than informal wiki or ephemera material.
-
-The reasoning agent attempts to resolve conflicting evidence, but answer quality still depends on retrieving the relevant authoritative sources.
-
-## 5. External API Dependency
-
-Live mode depends on external APIs including Groq and Voyage AI.
-
-Possible failures include:
-
-- missing API keys
-- network errors
-- rate limits
-- provider outages
-- model availability changes
-
-The application should display these failures clearly instead of silently presenting simulation results as live retrieval.
-
-## 6. Maximum Search Rounds
-
-The search agent uses a configurable maximum number of search rounds.
-
-This prevents infinite loops, but a difficult question may occasionally require more searches than the configured limit.
-
-## 7. Final Evaluation Size
-
-The evaluation set includes official Track 1C questions, multi-hop questions, direct lookup tests, and robustness tests.
-
-The set is useful for system validation but is still relatively small and cannot represent every possible question over the Ashen Era Archive.
-
-## 8. Standalone Image File Indexing
-
-Standalone image files are currently not indexed.
-
-During corpus ingestion, 86 unsupported files, mainly PNG figure plates, were skipped. This limits retrieval of information that is available only within those images.
 ```python
 from src.retrieval.mock_search import search
 ```
 
-Rather than `from src.retrieval.search import search`. This is a deliberate decoupling: the agent loop, planner, evidence checker, query rewriter, and answer generator are verified and testable independently of vector store indexing status.
+Rather than `from src.retrieval.search import search` directly in the loop. This ensures the agent loop, planner, evidence checker, query rewriter, and answer generator remain verified, stable, and testable independently of vector store indexing status. The final evaluation will be rerun once the live vector database is fully populated.
 
 ## 2. Voyage AI Rate Limiting Without Billing Configured
 
@@ -84,3 +27,31 @@ Discovered during test suite runs that the team's Voyage AI account has no payme
   1. Add a payment method to the [Voyage AI Dashboard](https://dashboard.voyageai.com/) to unlock standard rate limits (free 200M tokens still apply).
   2. Have Member 1 share the pre-indexed `data/vector_db/` directory directly (via shared drive or archive).
   3. Run local indexing using throttled micro-batches (`batch_size=10` with ~20s delay between requests).
+
+## 3. Scanned / Image-Only PDFs
+
+Some archive files may be scanned PDFs without an extractable text layer. The current PDF loader relies on text extraction and does not perform OCR. Therefore, information contained only inside image-based pages may not be searchable.
+
+## 4. DOCX Page Numbers
+
+DOCX documents are successfully extracted, including paragraphs and tables. However, exact rendered page numbers are not reliably available from DOCX files. Citations from these documents may therefore include the source filename without a physical page number.
+
+## 5. Source Reliability and Conflicting Evidence
+
+The archive contains sources with different levels of authority. For example, Codex or Gazetteer sources provide more authoritative information than informal wiki or ephemera material. The reasoning agent actively weighs source authority, but answer quality still depends on retrieving the relevant authoritative passages.
+
+## 6. External API Dependencies
+
+Live mode depends on external APIs including Groq and Voyage AI. Possible failure modes include missing API keys, network errors, rate limits, provider outages, or model availability changes. The application displays these failures clearly instead of silently falling back or presenting simulation results as live retrieval.
+
+## 7. Maximum Search Rounds
+
+The search agent uses a configurable maximum number of search rounds to prevent infinite loops. While effective for safety, an especially complex question requiring extensive hops may occasionally require more searches than the configured limit allows.
+
+## 8. Final Evaluation Size
+
+The evaluation set includes official Track 1C questions, multi-hop questions, direct lookup tests, and robustness tests. While sufficient for system validation and judging, it cannot represent every possible permutation of inquiries across the Ashen Era Archive.
+
+## 9. Standalone Image File Indexing
+
+Standalone image files are currently not indexed. During corpus ingestion, 86 unsupported files (mainly PNG figure plates) were skipped, limiting retrieval of information present exclusively in visual figures.
