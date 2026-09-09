@@ -226,3 +226,41 @@ Detailed Observations:
 
 Conclusion & Decision:
 `openai/gpt-oss-120b` remains the designated production model for Track 1C reasoning tasks where fine-grained source authority weighting and multi-hop gap articulation directly impact evaluation scores against the competition rubric. `openai/gpt-oss-20b` is validated as an effective, low-latency alternative for rapid batch testing.
+
+
+## Experiment 008: Full-Archive Real-Retrieval End-to-End Evaluation
+
+Date: 2026-09-09
+
+Goal:
+Validate the entire agentic search pipeline (Planner -> Voyage Query Embedding -> ChromaDB Retrieval -> Evidence Checker -> Query Rewriter -> Answer Generator) against the complete, fully indexed 2,186-chunk Ashen Era Archive using the 8-question benchmark suite.
+
+Configuration:
+- Backend: Production ChromaDB vector store (`data/vector_db`, 2,186 chunks across wiki, codex, chronicles, and ephemera)
+- Model: `openai/gpt-oss-120b` via Groq API
+- Embeddings: Voyage AI (`voyage-4-large` for documents, `voyage-4-lite` for queries)
+- Default Top-K: 5
+- Max search rounds: 3
+- Benchmark file: `src/evaluation/questions.json`
+- Output log: `src/evaluation/results/evaluation_20260909_221922.json`
+
+Results (8/8 - 100% Accuracy):
+
+| QID | Question Summary | Rounds | Final Status | Expected Answer | Agent Answer | Result |
+|---|---|---|---|---|---|---|
+| `1c_000` | Gloamreach true founding year | 1 | Sufficient | 246 AS | 246 AS (cites Codex Vaeloria I p. 23-24, overrides wiki hedge) | **PASS** (2/2) |
+| `1c_003` | Gauntlet of Sorrowfell forging year | 1 | Sufficient | 391 AS | 391 AS (cites Codex Vaeloria II p. 11, docx) | **PASS** (2/2) |
+| `1b_005` | War won by Isolde Mournvale's org | 2 | Sufficient | The War of Drowned Light | The War of Drowned Light (cites Annals p. 28, wiki) | **PASS** (2/2) |
+| `internal_direct_001` | Isolde Mournvale's org | 1 | Sufficient | The Silent Choir | The Silent Choir (cites wiki & Annals p. 28) | **PASS** (2/2) |
+| `internal_nonsense_001` | Robustness test (`asdfgh...`) | 3 | Insufficient | None | Honestly declines: no relevant evidence found in archive | **PASS** (2/2) |
+| `1b_007` | Accord won by Ederon Fellgard's faction | 2 | Sufficient | The Leaden Accord | The Leaden Accord (cites Annals & Iron-Ring Cartel wiki) | **PASS** (2/2) |
+| `1b_022` | War won by Ravena Stormwell's faction | 2 | Sufficient | The War of Drowned Light | The War of Drowned Light (cites Annals codex) | **PASS** (2/2) |
+| `1b_003` | Shadowed redoubt housing Cerys's relic | 2 | Sufficient | Gloamreach | Gloamreach (cites Cinder-Wrought Aegis & Codex II) | **PASS** (2/2) |
+
+Key Observations:
+1. **Multi-Hop Gap Detection & Reformulation**: On all four multi-hop questions (`1b_005`, `1b_007`, `1b_022`, `1b_003`), Round 1 correctly identified the entity membership and halted with `insufficient`. Round 2 generated precise, targeted queries (`The Silent Choir war victory`, `Iron-Ring Cartel won accord`, `Cinder-Wrought Aegis shadowed redoubt location`) and resolved the missing fact chain with full citations.
+2. **Authority Conflict Resolution**: For both `1c_000` (Gloamreach) and `1c_003` (Gauntlet), the agent extracted the canonical Codex passages and explicitly synthesized in its final answer that the authoritative Codex supersedes the informal wiki's "contested" hedge.
+3. **Anti-Hallucination Guard**: On the nonsense robustness input, the agent searched 3 times without finding evidence, never falsely marked sufficiency, and concluded with an honest refusal.
+
+Conclusion:
+The full Track 1C pipeline successfully achieves 100% accuracy on real-world multi-hop questions, conflict resolution, and anti-hallucination over the live 2,186-chunk Ashen Era Archive.
