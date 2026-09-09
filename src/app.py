@@ -247,9 +247,8 @@ with st.sidebar:
             st.error("🔴 GROQ API Key: Missing (Live calls will fail)")
 
         st.info(
-            "ℹ️ **Retrieval Status**: Live Mode currently uses the Groq LLM with "
-            "structured mock retrieval (`src.retrieval.mock_search`). Full-archive ChromaDB "
-            "vector retrieval is being integrated by Member 1."
+            "ℹ️ **Retrieval Status**: Live Mode is fully connected to the Groq LLM and "
+            "the persistent ChromaDB vector store (2,186 archive chunks indexed)."
         )
     else:
         st.info("ℹ️ **Simulation Mode Active**: Running verified pre-recorded benchmark traces.")
@@ -259,11 +258,11 @@ with st.sidebar:
 
     if is_live_mode:
         max_rounds = st.slider("Max Search Rounds", min_value=1, max_value=5, value=3, key="live_max_rounds")
-        top_k = st.slider("Retrieval Top-K", min_value=5, max_value=25, value=15, key="live_top_k")
+        top_k = st.slider("Retrieval Top-K", min_value=3, max_value=15, value=5, key="live_top_k")
         st.caption("⚙️ Parameters are dynamically passed to the live search loop.")
     else:
         max_rounds = st.slider("Max Search Rounds", min_value=1, max_value=5, value=3, disabled=True, key="sim_max_rounds")
-        top_k = st.slider("Retrieval Top-K", min_value=5, max_value=25, value=15, disabled=True, key="sim_top_k")
+        top_k = st.slider("Retrieval Top-K", min_value=3, max_value=15, value=5, disabled=True, key="sim_top_k")
         st.caption("🔒 *Sliders are disabled in Simulation Mode (traces are fixed). Enable Live Agent Mode to customize parameters.*")
 
     st.markdown("---")

@@ -47,7 +47,7 @@ else:
 
 
 MAX_ROUNDS = int(os.getenv("MAX_SEARCH_ROUNDS", 3))
-TOP_K = int(os.getenv("SEARCH_TOP_K", 15))
+TOP_K = int(os.getenv("SEARCH_TOP_K", 5))
 
 
 def _dedupe(evidence_list: list[dict]) -> list[dict]:
