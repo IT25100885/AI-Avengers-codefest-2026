@@ -63,76 +63,87 @@ st.markdown(
     .main-header {
         font-size: 2.3rem;
         font-weight: 700;
-        color: #1E293B;
+        color: var(--text-color, #E2E8F0);
         margin-bottom: 0.2rem;
     }
     .sub-header {
         font-size: 1.05rem;
-        color: #64748B;
+        color: var(--text-color, #94A3B8);
+        opacity: 0.85;
         margin-bottom: 1rem;
     }
     .track-badge {
-        background-color: #EEF2FF;
-        color: #4F46E5;
+        background-color: rgba(99, 102, 241, 0.15);
+        color: #818CF8;
         padding: 0.3rem 0.8rem;
         border-radius: 9999px;
         font-size: 0.85rem;
         font-weight: 600;
         display: inline-block;
         margin-bottom: 0.8rem;
-        border: 1px solid #C7D2FE;
+        border: 1px solid rgba(99, 102, 241, 0.3);
     }
     .step-card {
         border-radius: 0.6rem;
         padding: 1rem 1.2rem;
         margin-bottom: 0.8rem;
-        border: 1px solid #E2E8F0;
-        background-color: #F8FAFC;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        background-color: rgba(128, 128, 128, 0.08);
+        color: var(--text-color, #E2E8F0);
     }
     .step-sufficient {
-        border-left: 5px solid #10B981;
+        border-left: 5px solid #10B981 !important;
     }
     .step-insufficient {
-        border-left: 5px solid #F59E0B;
+        border-left: 5px solid #F59E0B !important;
     }
     .status-badge-sufficient {
-        background-color: #D1FAE5;
-        color: #065F46;
-        padding: 0.2rem 0.6rem;
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #34D399;
+        padding: 0.25rem 0.65rem;
         border-radius: 4px;
         font-weight: 600;
         font-size: 0.85rem;
+        border: 1px solid rgba(16, 185, 129, 0.35);
     }
     .status-badge-insufficient {
-        background-color: #FEF3C7;
-        color: #92400E;
-        padding: 0.2rem 0.6rem;
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #FBBF24;
+        padding: 0.25rem 0.65rem;
         border-radius: 4px;
         font-weight: 600;
         font-size: 0.85rem;
+        border: 1px solid rgba(245, 158, 11, 0.35);
     }
     .answer-box {
-        background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
-        border: 1px solid #86EFAC;
+        background-color: rgba(16, 185, 129, 0.08);
+        border: 1.5px solid #10B981;
         border-radius: 0.75rem;
         padding: 1.3rem;
         margin: 1rem 0;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: var(--text-color, #F1F5F9);
+    }
+    .answer-box * {
+        color: var(--text-color, #F1F5F9) !important;
     }
     .sim-banner {
-        background-color: #FEF3C7;
+        background-color: rgba(245, 158, 11, 0.15);
         border-left: 5px solid #F59E0B;
         padding: 0.75rem 1rem;
         border-radius: 4px;
         margin-bottom: 1rem;
         font-weight: 500;
-        color: #78350F;
+        color: #FCD34D;
     }
     .source-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
+        background-color: rgba(128, 128, 128, 0.08);
+        border: 1px solid rgba(128, 128, 128, 0.25);
         border-radius: 6px;
         padding: 0.6rem 0.9rem;
         margin-bottom: 0.4rem;
+        color: var(--text-color, #E2E8F0);
     }
     </style>
     """,
@@ -253,12 +264,9 @@ with st.sidebar:
         else:
             st.error("🔴 VOYAGE API Key: Missing (Live retrieval calls will fail)")
 
-        st.info(
-            "ℹ️ **Retrieval Status**: Live Mode is fully connected to the Groq LLM and "
-            "the persistent ChromaDB vector store (2,186 archive chunks indexed)."
         st.success(
-            "🟢 **Retrieval Status**: Live Mode uses the full Ashen Era Archive "
-            "with Voyage AI query embeddings, ChromaDB vector retrieval, and Voyage reranking."
+            "🟢 **Retrieval Status**: Live Mode is fully connected to the Groq LLM and "
+            "the persistent ChromaDB vector store (2,186 archive chunks indexed)."
         )
     else:
         st.info("ℹ️ **Simulation Mode Active**: Running verified pre-recorded benchmark traces.")
@@ -425,7 +433,7 @@ if current_res:
                         {badge_html}
                     </div>
                     <div><strong>Query Used:</strong> <code>{query}</code></div>
-                    <div style="color: #475569; font-size: 0.9rem; margin-top: 0.3rem;">
+                    <div style="opacity: 0.85; font-size: 0.9rem; margin-top: 0.3rem;">
                         <strong>Retrieved Chunks:</strong> {count} documents
                     </div>
                 </div>
@@ -461,7 +469,7 @@ if current_res:
                         f"""
                         <div class="source-card">
                             📄 <strong>{doc_name}</strong> &nbsp;•&nbsp; <code>{page_info}</code>
-                            <div style="font-size: 0.8rem; color: #64748B;">Category: <em>{cat}</em></div>
+                            <div style="font-size: 0.8rem; opacity: 0.85;">Category: <em>{cat}</em></div>
                         </div>
                         """,
                         unsafe_allow_html=True,

@@ -53,7 +53,7 @@ flowchart TD
     K --> D
 ```
 
-More detail is available in `docs/architecture.md`.
+Comprehensive architecture specifications, multi-round state machine, component sequence diagrams, and source authority resolution hierarchies are documented in [docs/architecture.md](docs/architecture.md). Key design rationale and architectural decisions are documented in [docs/decisions.md](docs/decisions.md).
 
 ---
 

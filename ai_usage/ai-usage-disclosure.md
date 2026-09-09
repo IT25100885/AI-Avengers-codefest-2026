@@ -67,8 +67,10 @@ All AI-assisted outputs were reviewed, tested, and modified by team members befo
 AI interaction transcripts are stored in the `ai_usage/chat_logs/` folder.
 
 - [Claude AI Usage Log](chat_logs/claude_chat_log.txt)
-- [Antigravity AI Usage Log - Member 2](chat_logs/antigravity_chat_log.txt)
+- [Antigravity AI Usage Log - Member 2 (Session 1 & Ingestion)](chat_logs/antigravity_chat_log.txt)
+- [Antigravity AI Usage Log - Member 2 (Session 2 & Optimization)](chat_logs/antigravity_session2_chat_log.txt)
 - [Antigravity AI Usage Log - Member 3](chat_logs/member3_ui_antigravity_chat_log.txt)
 - [ChatGPT AI Usage Log - Member 4](chat_logs/chatgpt_codefest_chat_log.txt)
+
 
 

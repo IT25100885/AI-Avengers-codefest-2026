@@ -92,3 +92,18 @@ Empirical analysis of the Ashen Era Archive reveals a deliberate design pattern:
 
 Status:
 Accepted
+
+## Decision 006: Retrieval payload tuning for Groq TPM limit and Voyage reranker fallback resilience
+
+Date: 2026-09-09
+
+Decision:
+1. Adjust default retrieval candidate count (`SEARCH_TOP_K`) from 15 down to 5 across `src/agent/search_agent.py`, `.env.example`, and the Streamlit UI configuration (`src/app.py`).
+2. Implement defensive exception handling in `VoyageReranker` (`src/retrieval/reranker.py`) to catch Voyage AI `RateLimitError` and HTTP 429 exceptions gracefully, falling back to raw ChromaDB vector similarity ranking rather than raising an unhandled exception.
+
+Reason:
+During full-archive testing on `openai/gpt-oss-120b` via Groq API, passing 15 dense retrieved chunks (~8,642 prompt tokens) exceeded Groq's on-demand rate limit of 8,000 TPM, triggering HTTP 413 errors. Setting `SEARCH_TOP_K=5` reduced the prompt payload to ~2,500 tokens per round—well within the 8k TPM ceiling while maintaining 100% retrieval accuracy on the 8-question benchmark suite. Furthermore, free-tier Voyage AI accounts enforce a 10,000 TPM limit that can be exceeded under rapid consecutive searches; graceful fallback to ChromaDB dense vector ordering ensures zero agent crashes during live demonstration and evaluation.
+
+Status:
+Accepted
+
